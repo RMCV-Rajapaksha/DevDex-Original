@@ -7,7 +7,6 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comments');
 
 
-
 //create
 router.post('/create',async (req,res)=>{
     try{
@@ -32,8 +31,6 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-
-
 //delete
 router.delete("/:id",async (req,res)=>{
     try{
@@ -44,12 +41,6 @@ router.delete("/:id",async (req,res)=>{
         res.status(500).json(err)
     }
 })
-
-
-
-
-
-
 
 //get post comment
 router.get('/post/:postId', async (req, res) => {

@@ -5,6 +5,8 @@ const { route } = require('./auth');
 const bcrypt = require('bcrypt');
 const Post = require('../models/Post');
 const Comment = require('../models/Comments');
+
+
 //update
 router.put('/:id', async (req, res) => {
     try{
@@ -21,8 +23,6 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-
-
 //delete
 router.delete("/:id",async (req,res)=>{
     try{
@@ -35,10 +35,6 @@ router.delete("/:id",async (req,res)=>{
         res.status(500).json(err)
     }
 })
-
-
-
-
 
 //get
 router.get('/:id', async (req, res) => {

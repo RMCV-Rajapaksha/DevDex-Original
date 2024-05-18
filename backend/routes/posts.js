@@ -76,8 +76,6 @@ router.get('/', async (req, res) => {
     }
 })
 
-
-
 //get user posts
 router.get('/user/:userId', async (req, res) => {
     try{
