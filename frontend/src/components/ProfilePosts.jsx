@@ -2,10 +2,10 @@ import React from 'react'
 
 const ProfilePosts = () => {
     return (
-        <div className="w-full flex mt-8 space-x-4">
+        <div className="w-full flex mt-8 space-x-4 bg-gray-300 p-4 rounded-3xl ">
           {/* Left */}
     <div className="w-[35%]  h-[200px] flex justify-center items-center">
-      <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg" alt="" className="h-full w-full object-cover"/>
+      <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg" alt="" className="h-full w-full object-cover rounded-3xl"/>
     
     </div>
        {/* Right */}

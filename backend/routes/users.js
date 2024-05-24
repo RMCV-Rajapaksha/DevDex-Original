@@ -5,10 +5,11 @@ const { route } = require('./auth');
 const bcrypt = require('bcrypt');
 const Post = require('../models/Post');
 const Comment = require('../models/Comments');
+const verifyToken = require('../verifyToken');
 
 
 //update
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
     try{
         if(req.body.password){
             const salt=await bcrypt.genSalt(10)
@@ -24,7 +25,7 @@ router.put('/:id', async (req, res) => {
 })
 
 //delete
-router.delete("/:id",async (req,res)=>{
+router.delete("/:id",verifyToken,async (req,res)=>{
     try{
         await User.findByIdAndDelete(req.params.id)
         await Post.deleteMany({userId:req.params.id})

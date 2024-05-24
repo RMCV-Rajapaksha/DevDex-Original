@@ -5,11 +5,12 @@ const verifyToken=(req,res,next)=>{
     if(!token){
         return res.status(401).json('You are not authenticated')
     }
-    jwt.verify(token,process.env.SECRET,async(err,data)=>{
+    jwt.verify(token,process.env.SECRET_KEY,async(err,data)=>{
         if(err){
             return res.status(403).json('You are not valid')
         }
         req.userId=data.id;
+        console.log("passed")
         next();
     })
 }
