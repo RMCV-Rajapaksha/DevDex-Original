@@ -32,7 +32,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5174', // Ensure no trailing slash
+    origin: 'http://localhost:5173', // Ensure no trailing slash
     credentials: true,
 }));
 app.use(cookieParser());
