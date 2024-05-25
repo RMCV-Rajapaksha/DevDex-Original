@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
         if (!match) {
             return res.status(401).json("Wrong password");
         }
-        const token=jwt.sign({id:user._id,username:user.username,email:user.email},process.env.SECRET_KEY,{expiresIn:"3d"})  //token creation and remove password form json file
+        const token=jwt.sign({_id:user._id,username:user.username,email:user.email},process.env.SECRET_KEY,{expiresIn:"3d"})  //token creation and remove password form json file
         const {password,...info}=user._doc
         res.cookie("token",token).status(200).json(info)
     } catch (err) {

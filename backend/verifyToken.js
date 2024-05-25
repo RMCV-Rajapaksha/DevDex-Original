@@ -9,7 +9,7 @@ const verifyToken=(req,res,next)=>{
         if(err){
             return res.status(403).json('You are not valid')
         }
-        req.userId=data.id;
+        req.userId=data._id;
         console.log("passed")
         next();
     })

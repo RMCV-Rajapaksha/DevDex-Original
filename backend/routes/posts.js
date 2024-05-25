@@ -89,15 +89,15 @@ router.get('/user/:userId', async (req, res) => {
 })
 
 //search posts
-router.get('/search/:prompt',async(req,res)=>{
-    try{
-
-
+router.get('/:prompt', async (req, res) => {
+    try {
+      const prompt = req.params.prompt;
+      const posts = await Post.find({ title: { $regex: prompt, $options: 'i' } });
+      res.json(posts);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-    catch(err){
-        res.status(500).json(err)
-    }
-})
-
-
+  });
+  
 module.exports = router;
