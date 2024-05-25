@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { BsSearch } from 'react-icons/bs'
 import { FaBars } from 'react-icons/fa'
 import { useState,useContext } from 'react'
@@ -11,6 +11,8 @@ const Navbar = () => {
   const[menu, setMenu] = useState(false)
   const navigate=useNavigate()
   console.log(prompt)
+  const path=useLocation().pathname
+
 
 
   const showMenu = () => {
@@ -25,10 +27,10 @@ const Navbar = () => {
       <h1 className='text-lg md:text-x1  font-extrabold '>
         <Link className="text-white" to="/">CodeStore</Link>
       </h1>
-      <div className='flex justify-center items-center space-x-0  '>
+      {path==="/"&&<div className='flex justify-center items-center space-x-0  '>
         <p onClick={()=>navigate(prompt?"?search"+prompt:navigate("/"))} className='cursor-pointer'><BsSearch style={{ color: 'white' }}/></p>
         <input onChange={(e)=>setPromt(e.target.value)}  className='outline-none px-3 rounded-full' placeholder='Search a solution' type="text"></input>
-      </div>
+      </div>}
       <div className='hidden md:flex items-center justify-center space-x-2 md:space-x-4'>
         {user? <h3 className='text-white'><Link to="/write">Write</Link></h3> :<h3><Link className='text-white' to="/login">Login</Link></h3>}
         {user? <div onClick={showMenu}>

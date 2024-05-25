@@ -53,8 +53,8 @@ setLoader(true)
                   <div className="flex items-center justify-between mt-2 md:mt-4">
                     <p>@{post.username}</p>
                     <div className="flex space-x-2">
-                      <p>16/05/2024</p>
-                      <p>16:45</p>
+                    <p>{new Date(post.updatedAt).toString().slice(0,15)}</p>
+            <p>{new Date(post.updatedAt).toString().slice(16,24)}</p>
                     </div>
                   </div>
                   <img src={post.photo} className="w-full mx-auto mt-8" alt="" />

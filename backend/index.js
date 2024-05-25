@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const multer=require('multer')
 
 // Load environment variables from .env file
 dotenv.config();
@@ -42,6 +43,22 @@ app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
+
+//image upload
+const storage=multer.diskStorage({
+    destination:(req,file,fn)=>{
+        fn(null,"images")
+    },
+    filename:(req,file,fn)=>{
+        fn(null,req.body.img)
+    }
+})
+
+const upload=multer({storage:storage})
+app.post("/api/upload",upload.single("file"),(req,res)=>{
+    res.status(200).json("Image has been uploaded successfully")
+})
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
