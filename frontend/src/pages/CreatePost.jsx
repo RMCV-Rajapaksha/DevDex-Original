@@ -43,7 +43,7 @@ const handleCreate=async (e)=>{
 
         if(file){
           const data=new FormData()
-          const filename=file.name
+          const filename=Date.now()+file.name
           data.append("img",filename)
           data.append("file",file)
           post.photo=filename
@@ -73,15 +73,15 @@ const handleCreate=async (e)=>{
   return (
     <>
       <Navbar />
-      <div className="px-6 md:px-[200px] mt-8 bg-gray-300 w-[90%] mx-auto rounded-3xl mb-10">
-        <h1 className="font-bold md:text-2xl text-xl mt-10 pt-5">Create solution</h1>
+      <div className="px-6 md:px-[100px] mt-20 bg-gray-300 w-[80%] mx-auto rounded-3xl mb-10 py-5">
+        <h1 className="font-bold md:text-2xl text-xl mt-10 ">Create solution</h1>
         <form className="w-full flex flex-col space-y-4 md:space-y-8 mt-4" onSubmit={handleCreate}>
           <input onChange={(e) => setTitle(e.target.value)} className="px-4 py-2 outline-none border-2 border-black rounded-3xl" type="text" placeholder="Enter post title" />
           <input onChange={(e) => setFile(e.target.files[0])} className="px-4" type="file" />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
               <input value={cat} onChange={(e) => setCat(e.target.value)} className="px-4 py-2 border-2 border-black rounded-3xl" placeholder="Enter post category" type="text" />
-              <div onClick={addCategory} className="bg-black text-white px-4 py-2 font-semibold cursor-pointer">Add</div>
+              <div onClick={addCategory} className="bg-black text-white px-4 py-2 font-semibold cursor-pointer  rounded-3xl ">Add</div>
             </div>
             {/* Categories */}
             <div className="flex px-4 mt-3">
@@ -95,11 +95,11 @@ const handleCreate=async (e)=>{
               ))}
             </div>
           </div>
-          <textarea onChange={(e) => setDesc(e.target.value)} rows={15} cols={30} className="px-4 py-2 border-2 border-black rounded-3xl" placeholder="Enter Post Description" />
+          <textarea onChange={(e) => setDesc(e.target.value)} rows={9} cols={30} className="px-4 py-2 border-2 border-black rounded-3xl" placeholder="Enter Post Description" />
           <button className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 pt-2 md:text-xl text-lg rounded-full pb-2">Create</button>
         </form>
       </div>
-      <Footer />
+      <Footer/>
     </>
   );
 };

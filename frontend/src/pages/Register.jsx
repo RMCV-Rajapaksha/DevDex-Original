@@ -34,7 +34,7 @@ function Register() {
     <>
       <div className="flex items-center justify-between px-6 md:px-[200px] py-4 bg-black">
         <h1 className="text-lg md:text-xl font-extrabold">
-          <Link className='text-white' to="/">CodeStore</Link>
+          <Link className='text-white' to="/">DevDex</Link>
         </h1>
         <h3 className="text-lg md:text-xl font-extrabold">
           <Link className='text-white' to="/login">Login</Link>

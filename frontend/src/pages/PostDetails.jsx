@@ -10,6 +10,7 @@ import { URL, IF } from '../url';
 import { UserContext } from "../context/UserContext";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import TextToSpeech from "../components/TextToSpeech";
 
 const PostDetails = () => {
   const postId = useParams().id;
@@ -53,8 +54,8 @@ navigate('/')
   return (
     <div>
       <Navbar />
-                {loader?<div className="h-[80vh] flex justify-center items-center"><Loader/></div>:
-                  <div className="px-8 md:px-[200px] mt-20">
+                {loader?<div className="h-[80vh] flex justify-center items-center m-10"><Loader/></div>:
+                  <div className="px-8 md:px-[200px] mt-20 m-10">
                   <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-black md:text-3xl">{post.title}</h1>
                     {user?._id===post?.userId && <div className="flex items-center justify-center space-x-2">
@@ -64,6 +65,7 @@ navigate('/')
                   </div>}
                     
                   </div>
+
                   <div className="flex items-center justify-between mt-2 md:mt-4">
                     <p>@{post.username}</p>
                     <div className="flex space-x-2">
@@ -72,6 +74,7 @@ navigate('/')
                     </div>
                   </div>
                   <img src={IF+post.photo} className="w-full mx-auto mt-8" alt="" />
+                  <TextToSpeech text={post.desc}/>
                   <p className="mx-auto mt-8">{post.desc}</p>
                   <div className="flex items-center mt-8 space-x-4 font-semibold">
                     <p>Categories:</p>
@@ -100,7 +103,7 @@ navigate('/')
                     {/*write comment*/}
                     <div className="w-full flex flex-col mt-4 md:flex-row">
                       <input type="text" placeholder="Write a comment" className="md:w-[80%] outline-none py-2 px-4 mt-4 md:mt-0" />
-                      <button className="bg-black text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0">Add Comment</button>
+                      <button className="bg-black text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0 rounded-3xl">Add Comment</button>
                     </div>
                   </div>
                 </div>}

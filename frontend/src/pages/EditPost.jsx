@@ -1,19 +1,21 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
 import { ImCross } from "react-icons/im"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { URL} from '../url';
+import { UserContext } from "../context/UserContext"
 
 const EditPost = () => {
   const postId = useParams().id
-  console.log("my"+postId)
+const {user}=useContext(UserContext)
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
   const [cat, setCat] = useState("")
   const [cats, setCats] = useState([])
+  const navigate=useNavigate()
 
   const fetchPost = async () => {
     try {
@@ -25,6 +27,45 @@ const EditPost = () => {
       setFile(res.data.photo)
       setCats(res.data.categories || []) // Ensure categories is an array
     } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    const post={
+      title,
+      desc,
+      username:user.username,
+      userId:user._id,
+      categories:cats
+    }
+
+    if(file){
+      const data=new FormData()
+      const filename=file.name
+      data.append("img",filename)
+      data.append("file",file)
+      post.photo=filename
+      // console.log(data)
+      //img upload
+      try{
+        const imgUpload=await axios.post(URL+"/api/upload",data)
+        // console.log(imgUpload.data)
+      }
+      catch(err){
+        console.log(err)
+      }
+    }
+    //post upload
+    // console.log(post)
+    try{
+      const res=await axios.put(URL+"/api/posts/"+postId,post,{withCredentials:true})
+      navigate("/posts/post/"+res.data._id)
+      // console.log(res.data)
+
+    }
+    catch(err){
       console.log(err)
     }
   }
@@ -69,7 +110,7 @@ const EditPost = () => {
             </div>
           </div>
           <textarea onChange={(e) => setDesc(e.target.value)} value={desc} rows={15} cols={30} className="px-4 py-2 outline-none border-2 border-black rounded-3xl " placeholder="Enter Post Description"/>
-          <button className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 pt-2 md:text-xl text-lg rounded-full "> Update </button>
+          <button onClick={handleUpdate} className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 pt-2 md:text-xl text-lg rounded-full "> Update </button>
         </form>
       </div>
       <Footer/>

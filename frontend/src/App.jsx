@@ -8,6 +8,7 @@ import { CreatePost } from './pages/CreatePost'
 import EditPost from './pages/EditPost'
 import Profile from './pages/Profile'
 import { UserContextProvider } from './context/UserContext'
+import Chat from './pages/AiChat'
 const App = () => {
   return (
     <UserContextProvider>
@@ -22,6 +23,7 @@ const App = () => {
       <Route exact path="/write" element={<CreatePost/>}/>
       <Route exact path="/edit/:id" element={<EditPost/>}/>
       <Route exact path="/profile/:id" element={<Profile/>}/>
+      <Route exact path="/chat" element={<Chat/>}/>
       </Routes>
      
     </UserContextProvider>

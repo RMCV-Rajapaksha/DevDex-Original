@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <div className="bg-black flex items-center justify-between px-6 md:px-[200px] py-4 w-full fixed top-0 left-0 z-50">
       <h1 className='text-lg md:text-xl font-extrabold'>
-        <Link className="text-white" to="/">CodeStore</Link>
+        <Link className="text-white" to="/">DevDex</Link>
       </h1>
       {path === "/" && (
         <div className='flex justify-center items-center space-x-0'>

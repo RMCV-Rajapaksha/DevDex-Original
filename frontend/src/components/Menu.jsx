@@ -23,6 +23,7 @@ function Menu() {
       {user && <h3 className='text-white text-sm md:text-lg hover:text-grey-500 m-2 cursor-pointer'>Profile</h3>}
       {user && <h3 className='text-white text-sm md:text-lg hover:text-grey-500 m-2 cursor-pointer'>Write</h3>}
       {user && <h3 className='text-white text-sm md:text-lg hover:text-grey-500 m-2 cursor-pointer'>My Blog</h3>}
+      {user && <h3 className='text-white text-sm md:text-lg hover:text-grey-500 m-2 cursor-pointer'>AIChat</h3>}
       {user && <h3 onClick={handleLogout} className='text-white text-sm md:text-lg hover:text-grey-500 m-2 cursor-pointer'>Logout</h3>}
     </div>
   )
