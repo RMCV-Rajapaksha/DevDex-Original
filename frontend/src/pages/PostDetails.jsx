@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { URL, IF } from '../url';
 import { UserContext } from "../context/UserContext";
 import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
 
 const PostDetails = () => {
   const postId = useParams().id;
@@ -16,6 +17,7 @@ const PostDetails = () => {
   const { user } = useContext(UserContext);
   //console.log(postId);
   const [loader, setLoader] = useState(false);
+  const navigate=useNavigate()
 
   const fetchPost=async()=>{
     setLoader(true)
@@ -33,10 +35,14 @@ setLoader(true)
 
   const handleDeletePost=async()=>{
     try{
-
+const res=await axios.delete(URL+"/api/posts/"+postId,{withCredentials:true})
+console.log(res.data)
+navigate('/')
     }
     catch(err)
-    {}
+    {
+      console.log(err)
+    }
   }
 
   useEffect(()=>{
@@ -48,12 +54,12 @@ setLoader(true)
     <div>
       <Navbar />
                 {loader?<div className="h-[80vh] flex justify-center items-center"><Loader/></div>:
-                  <div className="px-8 md:px-[200px] mt-8">
+                  <div className="px-8 md:px-[200px] mt-20">
                   <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-black md:text-3xl">{post.title}</h1>
                     {user?._id===post?.userId && <div className="flex items-center justify-center space-x-2">
                     
-                    <p className="cursor-pointer"><BiEdit /></p>
+                    <p className="cursor-pointer" onClick={()=>navigate("/edit/"+postId)}><BiEdit /></p>
                     <p className="cursor-pointer" onClick={handleDeletePost}><MdDelete /></p>
                   </div>}
                     
