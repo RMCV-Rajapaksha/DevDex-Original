@@ -50,7 +50,8 @@ const storage=multer.diskStorage({
         fn(null,"images")
     },
     filename:(req,file,fn)=>{
-        fn(null,req.body.img)
+    fn(null,req.body.img)
+        // fn(null,"image2.jpg")
     }
 })
 
