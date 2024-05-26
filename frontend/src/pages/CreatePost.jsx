@@ -15,6 +15,7 @@ export const CreatePost = () => {
 
   const [cat, setCat] = useState("");
   const [cats, setCats] = useState([]);
+  console.log(file)
 
   const navigate = useNavigate();
 
@@ -30,40 +31,44 @@ export const CreatePost = () => {
     updatedCats.splice(i, 1);
     setCats(updatedCats);
   };
+const handleCreate=async (e)=>{
+        e.preventDefault()
+        const post={
+          title,
+          desc,
+          username:user.username,
+          userId:user._id,
+          categories:cats
+        }
 
-  const handleCreate = async (e) => {
-    e.preventDefault();  // Preventing the page from reloading
-    const post = {
-      title,
-      desc,
-      username: user.username,
-      userId: user._id,
-      categories: cats,
-    };
-    if (file) {
-      const data = new FormData();
-      const filename = Date.now() + file.name;  // Prevent file name duplication
-      data.append("name", filename);
-      data.append("file", file);
-      post.img = filename;
-      // Image upload
-      try {
-        const imgUpload = await axios.post(URL + "/api/upload", data);
-        console.log(imgUpload.data);
-      } catch (err) {
-        console.log(err);
-      }
-    }
+        if(file){
+          const data=new FormData()
+          const filename=file.name
+          data.append("img",filename)
+          data.append("file",file)
+          post.photo=filename
+          // console.log(data)
+          //img upload
+          try{
+            const imgUpload=await axios.post(URL+"/api/upload",data)
+            // console.log(imgUpload.data)
+          }
+          catch(err){
+            console.log(err)
+          }
+        }
+        //post upload
+        // console.log(post)
+        try{
+          const res=await axios.post(URL+"/api/posts/create",post,{withCredentials:true})
+          navigate("/posts/post/"+res.data._id)
+          // console.log(res.data)
 
-    // Post creation
-    try {
-      const res = await axios.post(URL + "/api/posts/create", post, { withCredentials: true });
-      console.log(res.data);
-      navigate('/posts/post/' + res.data._id);
-    } catch (err) {
-      console.log(err);
+        }
+        catch(err){
+          console.log(err)
+        }
     }
-  };
 
   return (
     <>

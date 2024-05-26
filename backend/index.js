@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const multer=require('multer')
+const path = require('path');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -32,6 +33,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use("/images",express.static(path.join(__dirname,"/images")))
 app.use(cors({
     origin: 'http://localhost:5173', // Ensure no trailing slash
     credentials: true,
@@ -45,20 +47,27 @@ app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
 
 //image upload
-const storage=multer.diskStorage({
-    destination:(req,file,fn)=>{
-        fn(null,"images")
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "images");
     },
-    filename:(req,file,fn)=>{
-    fn(null,req.body.img)
-        // fn(null,"image2.jpg")
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
     }
-})
+});
 
-const upload=multer({storage:storage})
-app.post("/api/upload",upload.single("file"),(req,res)=>{
-    res.status(200).json("Image has been uploaded successfully")
-})
+const upload = multer({ storage: storage });
+app.post("/api/upload", upload.single("file"), (req, res, next) => {
+    console.log(req.body);
+    res.status(200).json("Image has been uploaded successfully");
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 
 
 // Start server

@@ -14,7 +14,7 @@ const PostDetails = () => {
   const postId = useParams().id;
   const [post, setPost] = useState({});
   const { user } = useContext(UserContext);
-  console.log(postId);
+  //console.log(postId);
   const [loader, setLoader] = useState(false);
 
   const fetchPost=async()=>{
@@ -29,6 +29,14 @@ setLoader(false)
 console.log(err)
 setLoader(true)
     }
+  }
+
+  const handleDeletePost=async()=>{
+    try{
+
+    }
+    catch(err)
+    {}
   }
 
   useEffect(()=>{
@@ -46,7 +54,7 @@ setLoader(true)
                     {user?._id===post?.userId && <div className="flex items-center justify-center space-x-2">
                     
                     <p className="cursor-pointer"><BiEdit /></p>
-                    <p className="cursor-pointer"><MdDelete /></p>
+                    <p className="cursor-pointer" onClick={handleDeletePost}><MdDelete /></p>
                   </div>}
                     
                   </div>
