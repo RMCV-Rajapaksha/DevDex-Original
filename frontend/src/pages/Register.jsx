@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { URL } from '../url';
+import Footer from '../components/Footer';
+import Navbar from '../components/Navbar'; // Import the Navbar component
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -29,6 +31,9 @@ function Register() {
   };
 
   return (
+    <>
+    <Navbar /> {/* Include the Navbar component */}
+    <div className="pt-20"> 
     <div className="flex justify-center min-h-screen text-gray-900 bg-gray-100">
       <div className="flex justify-center flex-1 max-w-screen-xl m-0 bg-white shadow sm:m-10 sm:rounded-lg">
         <div className="p-6 lg:w-1/2 xl:w-5/12 sm:p-12">
@@ -136,6 +141,9 @@ function Register() {
         </div>
       </div>
     </div>
+    </div>
+    <Footer />
+    </>
   );
 }
 
