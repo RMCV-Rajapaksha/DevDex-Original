@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 import Loader from '../components/Loader';
 import { UserContext } from "../context/UserContext";
 import { URL } from '../url';
+import Hero from "../components/Hero";
+
 
 const Home = () => {
   const { search } = useLocation();
@@ -35,7 +37,8 @@ const Home = () => {
   return (
     <>
       <Navbar />
-      <div className="px-8 md:px-[200px] min-h-[80vh]">
+      <Hero />
+      <div className="px-8 md:px-[200px] min-h-[80vh] mt-20">
         {loader ? (
           <div className="h-[40vh] flex justify-center items-center"><Loader/></div>
         ) : !noResults ? (
@@ -45,7 +48,7 @@ const Home = () => {
             </Link>
           ))
         ) : (
-          <h3 className="text-center font-bold mt-16">No posts available</h3>
+          <h3 className="mt-16 font-bold text-center">No posts available</h3>
         )}
       </div>
       <Footer />

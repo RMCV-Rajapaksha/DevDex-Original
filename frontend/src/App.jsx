@@ -9,6 +9,8 @@ import EditPost from './pages/EditPost'
 import Profile from './pages/Profile'
 import { UserContextProvider } from './context/UserContext'
 import Chat from './pages/AiChat'
+import MyBlogs from './pages/MyBlogs'
+import Game from './pages/Game'
 const App = () => {
   return (
     <UserContextProvider>
@@ -23,7 +25,9 @@ const App = () => {
       <Route exact path="/write" element={<CreatePost/>}/>
       <Route exact path="/edit/:id" element={<EditPost/>}/>
       <Route exact path="/profile/:id" element={<Profile/>}/>
+      <Route exact path="/myblogs/:id" element={<MyBlogs/>}/>
       <Route exact path="/chat" element={<Chat/>}/>
+      <Route exact path="/game" element={<Game/>}/>
       </Routes>
      
     </UserContextProvider>

@@ -2,29 +2,23 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Spline from '@splinetool/react-spline';
+import axios from "axios";
+
 const AiChat = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
 
   const sendMessage = async () => {
-    if (inputValue.trim()) {
-      setMessages((prev) => [...prev, { text: inputValue, sender: 'user' }]);
-      setInputValue('');
-
-      // Call the Gemini API here and add the response to the messages
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ'
-        },
-        body: JSON.stringify({ message: inputValue })
-      });
-
-      const data = await response.json();
-
-      setMessages((prev) => [...prev, { text: data.response, sender: 'gemini' }]);
-    }
+    const res = await axios({
+      url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ",
+      method: "post",
+      data: {
+        "contents": [{"parts": [{"text": inputValue}]}]
+      }
+    });
+    const responseText = res['data']['candidates'][0]['content']['parts'][0]['text'];
+    setMessages([...messages, { sender: 'user', text: inputValue }, { sender: 'bot', text: responseText }]);
+    setInputValue('');
   };
 
   return (
@@ -44,7 +38,7 @@ const AiChat = () => {
                   className={`p-1 sm:p-2 rounded-md ${
                     message.sender === 'user'
                       ? 'bg-blue-200 text-blue-800'
-                      : 'bg-gray-300 text-gray-800'
+                      : 'bg-gray-300 text-gray-600'
                   }`}
                 >
                   {message.text}

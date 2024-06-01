@@ -43,7 +43,7 @@ const handleCreate=async (e)=>{
 
         if(file){
           const data=new FormData()
-          const filename=Date.now()+file.name
+          const filename=file.name
           data.append("img",filename)
           data.append("file",file)
           post.photo=filename

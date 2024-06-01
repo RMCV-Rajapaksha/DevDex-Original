@@ -13,18 +13,41 @@ import { useNavigate } from "react-router-dom";
 import TextToSpeech from "../components/TextToSpeech";
 
 const PostDetails = () => {
-  const postId = useParams().id;
-  const [post, setPost] = useState({});
-  const { user } = useContext(UserContext);
-  //console.log(postId);
-  const [loader, setLoader] = useState(false);
+  const postId=useParams().id
+  const [post,setPost]=useState({})
+  const {user}=useContext(UserContext)
+  const [comments,setComments]=useState([])
+  const [comment,setComment]=useState("")
+  const [loader,setLoader]=useState(false)
   const navigate=useNavigate()
+
+  const fetchPostComments=async()=>{
+    setLoader(true)
+    try{
+      const res=await axios.get(URL+"/api/comments/post/"+postId)
+      console.log(res.data)
+      setComments(res.data)
+      setLoader(false)
+
+    }
+    catch(err){
+      setLoader(true)
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    fetchPostComments()
+
+  },[postId])
+
+
 
   const fetchPost=async()=>{
     setLoader(true)
     try{
 const res = await axios.get(URL+"/api/posts/"+postId)
-console.log(res.data)
+//console.log(res.data)
 setPost(res.data)
 setLoader(false)
     }
@@ -49,6 +72,24 @@ navigate('/')
   useEffect(()=>{
     fetchPost()
   },[postId])
+
+  const postComment=async(e)=>{
+    e.preventDefault()
+    try{
+      const res=await axios.post(URL+"/api/comments/create",
+      {comment:comment,author:user.username,postId:postId,userId:user._id},
+      {withCredentials:true})
+      console.log(res.data)
+      // fetchPostComments()
+      // setComment("")
+      window.location.reload(true)
+
+    }
+    catch(err){
+         console.log(err)
+    }
+
+  }
 
 
   return (
@@ -88,22 +129,15 @@ navigate('/')
                   </div>
                   <div className="flex flex-col mt-4">
                     <h3 className="mt-6 mb-4 font-semibold">Comments:</h3>
-                    <div className="px-2 py-2 bg-gray-200 rounded-lg ">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-gray-600">@jsjvk;odfm</h3>
-                        <div className="flex justify-center items-center space-x-4">
-                          <p className="text-gray-500">18/04/2024</p>
-                          <p className="text-gray-500">16:45</p>
-                        </div>
-                      </div>
-                    </div>
+                   
                       {/*comment*/}
-                    <Comments />
-                    <Comments />
+                      {comments?.map((c)=>(
+          <Comments key={c._id} c={c} post={post} />
+         ))}
                     {/*write comment*/}
                     <div className="w-full flex flex-col mt-4 md:flex-row">
-                      <input type="text" placeholder="Write a comment" className="md:w-[80%] outline-none py-2 px-4 mt-4 md:mt-0" />
-                      <button className="bg-black text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0 rounded-3xl">Add Comment</button>
+                      <input  onChange={(e)=>setComment(e.target.value)} type="text" placeholder="Write a comment" className="md:w-[80%] outline-none py-2 px-4 mt-4 md:mt-0" />
+                      <button onClick={postComment} className="bg-black text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0 rounded-3xl">Add Comment</button>
                     </div>
                   </div>
                 </div>}
