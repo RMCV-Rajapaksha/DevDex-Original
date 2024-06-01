@@ -30,7 +30,7 @@ const AiChat = () => {
   return (
     <>
       <Navbar />
-      <div className="flex md:flex-row  sm:flex-col h-screen items-center justify-center mx-20 sm:p-2">
+      <div className="flex md:flex-row  sm:flex-col h-screen items-center justify-center mx-20 sm:p-2 ">
         <div className="w-full sm:w-2/3 flex flex-col p-5 sm:p-1">
           <div className="overflow-y-auto h-72 sm:h-96 border rounded-md p-1 sm:p-2">
             {messages.map((message, index) => (
@@ -53,7 +53,7 @@ const AiChat = () => {
             ))}
           </div>
 
-          <div className="flex items-center mt-2 sm:mt-4">
+          <div className="flex items-center mt-2 sm:mt-4 border-black rounded-2xl">
             <input
               type="text"
               value={inputValue}
