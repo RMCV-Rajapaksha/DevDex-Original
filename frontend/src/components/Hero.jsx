@@ -1,6 +1,11 @@
 import React from 'react';
 
 function Hero() {
+
+  const handleLogin = () => {
+    // Define your login logic here
+  };
+
   return (
     <div className="w-screen h-screen ms:h-[80vh] md:h-[80vh] bg-black">
       <div className="max-w-5xl pt-16 mx-auto sm:pt-24">
@@ -10,7 +15,7 @@ function Hero() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <span className="rounded-full uppercase bg-pink-500 px-3 py-0.5 text-sm font-semibold leading-5 text-white">
-                    Beta Access
+                    From Bugs to Brilliance
                   </span>
                   <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
                     Welcome to <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-600">DevDex</span>
@@ -43,26 +48,27 @@ function Hero() {
                 </div>
                 <div className="h-4 border-l border-gray-700"></div>
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path>
-                  </svg>
-                  <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path>
-                  </svg>
-                  <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path>
-                  </svg>
-                  <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path>
-                  </svg>
-                  <svg className="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path>
-                  </svg>
+                  {/* You may add additional elements here */}
                 </div>
-                <div className="h-4 border-l border-gray-700"></div>
-                <a href="" target="_blank" rel="noopener noreferrer">
-                  <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1&theme=light" className="w-32 h-8 md:w-48 md:h-12 lg:w-64 lg:h-16" width="250" height="54" alt="Product Hunt Badge" />
-                </a>
+                <button
+                  onClick={handleLogin}
+                  className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+                >
+                  <svg
+                    className="w-6 h-6 -ml-2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <path d="M20 8v6M23 11h-6" />
+                  </svg>
+                  <span className="ml-3">Log In</span>
+                </button>
               </div>
             </div>
           </div>
