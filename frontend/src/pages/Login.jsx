@@ -6,6 +6,8 @@ import { URL } from '../url';
 import { UserContext } from '../context/UserContext';
 import Spline from '@splinetool/react-spline';
 import Navbar from '../components/Navbar'; // Import the Navbar component
+import logo_black from '../assets/images/logo_black.png'; 
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -37,11 +39,7 @@ function Login() {
           <div className="flex justify-center flex-1 max-w-screen-xl m-0 bg-white shadow sm:m-10 sm:rounded-lg">
             <div className="p-6 lg:w-1/2 xl:w-5/12 sm:p-12">
               <div>
-                <img
-                  src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
-                  className="w-32 mx-auto"
-                  alt="Logo"
-                />
+              <img src={logo_black} className="w-32 mx-auto" alt="Logo" />
               </div>
               <div className="flex flex-col items-center mt-12">
                 <h1 className="text-2xl font-extrabold xl:text-3xl">Log in to your account</h1>

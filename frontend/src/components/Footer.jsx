@@ -1,3 +1,4 @@
+import logo from '../assets/images/logo.png'; 
 const Footer = () => {
   return (
     <footer>
@@ -10,10 +11,10 @@ const Footer = () => {
                   <g fill="none" fillRule="evenodd">
                     <g transform="translate(0 -75)">
                       <g transform="translate(0 75)">
-                        {/* Your SVG Paths */}
+                      <img src={logo} alt="DevDex Logo" className="w-20 mr-2 h-15" />
                       </g>
                       <text fill="white" fontFamily="Nunito-Bold, Nunito" fontSize="512" fontWeight="bold">
-                        <tspan x="654" y="518">Tailwindow</tspan>
+                        <tspan x="654" y="518">DevDex</tspan>
                       </text>
                     </g>
                   </g>
@@ -67,7 +68,7 @@ const Footer = () => {
               DevDex. All Rights Reserved.
             </div>
             <div className="w-full px-4 text-center sm:w-auto sm:text-left">
-              Made with ❤️ by Tailwindow.
+              Made with Advanced Technology
             </div>
           </div>
         </div>

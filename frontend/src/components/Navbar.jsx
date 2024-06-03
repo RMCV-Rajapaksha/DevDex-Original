@@ -4,7 +4,7 @@ import { FaBars } from 'react-icons/fa';
 import { useState, useContext } from 'react';
 import Menu from './Menu';
 import { UserContext } from '../context/UserContext';
-
+import logo from '../assets/images/logo.png'; 
 const Navbar = () => {
   const [prompt, setPrompt] = useState("");
   const [menu, setMenu] = useState(false);
@@ -20,7 +20,9 @@ const Navbar = () => {
   return (
     <div className="bg-black flex items-center justify-between px-6 md:px-[200px] py-4 w-full fixed top-0 left-0 z-50">
       <h1 className='text-lg font-extrabold md:text-xl'>
-        <Link className="text-white " to="/">DevDex</Link>
+        <Link className="text-white " to="/">
+        <img src={logo} alt="DevDex Logo" className="w-20 mr-2 h-15" />
+          </Link>
       </h1>
       {path === "/" && (
         <div className='flex items-center justify-center space-x-0'>

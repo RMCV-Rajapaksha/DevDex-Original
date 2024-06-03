@@ -4,7 +4,7 @@ import axios from 'axios';
 import { URL } from '../url';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-
+import logo_black from '../assets/images/logo_black.png'; 
 function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -38,8 +38,8 @@ function Register() {
           <div className="flex justify-center flex-1 max-w-screen-xl m-0 bg-white shadow sm:m-10 sm:rounded-lg">
             <div className="p-6 lg:w-1/2 xl:w-5/12 sm:p-12">
               <div>
-                <img src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png" className="w-32 mx-auto" alt="Logo" />
-              </div>
+              <img src={logo_black} className="w-32 mx-auto" alt="Logo" />
+                </div>
               <div className="flex flex-col items-center mt-12">
                 <h1 className="text-2xl font-extrabold xl:text-3xl">
                   Sign up
