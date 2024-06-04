@@ -1,165 +1,43 @@
-import {useState, useEffect, useRef} from 'react'
-import randomWords from 'random-words'
-const NUMB_OF_WORDS = 200
-const SECONDS = 60
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import { useContext, useEffect, useState } from "react"
 
-function App() {
-  const [words, setWords] = useState([])
-  const [countDown, setCountDown] = useState(SECONDS)
-  const [currInput, setCurrInput] = useState("")
-  const [currWordIndex, setCurrWordIndex] = useState(0)
-  const [currCharIndex, setCurrCharIndex] = useState(-1)
-  const [currChar, setCurrChar] = useState("")
-  const [correct, setCorrect] = useState(0)
-  const [incorrect, setIncorrect] = useState(0)
-  const [status, setStatus] = useState("waiting")
-  const textInput = useRef(null)
+import React from 'react';
 
-  useEffect(() => {
-    setWords(generateWords())
-  }, [])
+function Game() {
+  const paragraph = `random-words generates random words for use as sample text. We use it to generate random blog posts when testing Apostrophe.
 
-  useEffect(() => {
-    if (status === 'started') {
-      textInput.current.focus()
-    }
-  }, [status])
-
-  function generateWords() {
-    return new Array(NUMB_OF_WORDS).fill(null).map(() => randomWords())
-  }
-
-  function start() {
-
-    if (status === 'finished') {
-      setWords(generateWords())
-      setCurrWordIndex(0)
-      setCorrect(0)
-      setIncorrect(0)
-      setCurrCharIndex(-1)
-      setCurrChar("")
-    }
-
-    if (status !== 'started') {
-      setStatus('started')
-      let interval = setInterval(() => {
-        setCountDown((prevCountdown) => {
-          if (prevCountdown === 0) {
-            clearInterval(interval)
-            setStatus('finished')
-            setCurrInput("")
-            return SECONDS
-          } else {
-            return prevCountdown - 1
-          }
-        }  )
-      } ,  1000 )
-    }
-    
-  }
-
-  function handleKeyDown({keyCode, key}) {
-    // space bar 
-    if (keyCode === 32) {
-      checkMatch()
-      setCurrInput("")
-      setCurrWordIndex(currWordIndex + 1)
-      setCurrCharIndex(-1)
-    // backspace
-    } else if (keyCode === 8) {
-      setCurrCharIndex(currCharIndex - 1)
-      setCurrChar("")
-    } else {
-      setCurrCharIndex(currCharIndex + 1)
-      setCurrChar(key)
-    }
-  }
-
-  function checkMatch() {
-    const wordToCompare = words[currWordIndex]
-    const doesItMatch = wordToCompare === currInput.trim()
-    if (doesItMatch) {
-      setCorrect(correct + 1)
-    } else {
-      setIncorrect(incorrect + 1)
-    }
-  }
-
-  function getCharClass(wordIdx, charIdx, char) {
-    if (wordIdx === currWordIndex && charIdx === currCharIndex && currChar && status !== 'finished') {
-      if (char === currChar) {
-        return 'has-background-success'
-      } else {
-        return 'has-background-danger'
-      }
-    } else if (wordIdx === currWordIndex && currCharIndex >= words[currWordIndex].length) {
-      return 'has-background-danger'
-    } else {
-      return ''
-    }
-  }
-
+  Cryptographic-quality randomness is NOT the goal, as speed matters for generating sample text and security does not. As such, Math.random() is used in most cases.
+  
+  The seed option can be used with the generate function for situations that require deterministic output. When given the same seed with the same input, generate() will yield deterministic results, in regards to both actual word selection and the number of words returned (when using min and max). The underlying implementation of this option utilizes the seedrandom package as a replacement for Math.random().`;
+  
+  const maxTime =60 ;
+  const [time, setTime] = useState(maxTime);
+  const [mistake, setMistake] = useState(0);
+  const [WPN, setWPM] = useState(0);
+  const [CPM, setCPM] = useState(0);
 
   return (
-    <div className="App">
-      <div className="section">
-        <div className="is-size-1 has-text-centered has-text-primary">
-          <h2>{countDown}</h2>
-        </div>
+    <>
+      <Navbar />
+      <div className="mt-20 test">
+        {paragraph.split('').map((char, index) => (
+          <span key={index} className="char">
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
       </div>
-      <div className="control is-expanded section">
-        <input ref={textInput} disabled={status !== "started"} type="text" className="input" onKeyDown={handleKeyDown} value={currInput} onChange={(e) => setCurrInput(e.target.value)}  />
-      </div>
-      <div className="section">
-        <button className="button is-info is-fullwidth" onClick={start}>
-          Start
-        </button>
-      </div>
-      {status === 'started' && (
-        <div className="section" >
-          <div className="card">
-            <div className="card-content">
-              <div className="content">
-                {words.map((word, i) => (
-                  <span key={i}>
-                    <span>
-                      {word.split("").map((char, idx) => (
-                        <span className={getCharClass(i, idx, char)} key={idx}>{char}</span>
-                      )) }
-                    </span>
-                    <span> </span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {status === 'finished' && (
-        <div className="section">
-          <div className="columns">
-            <div className="column has-text-centered">
-              <p className="is-size-5">Words per minute:</p>
-              <p className="has-text-primary is-size-1">
-                {correct}
-              </p>
-            </div>
-            <div className="column has-text-centered">
-              <p className="is-size-5">Accuracy:</p>
-              {correct !== 0 ? (
-                <p className="has-text-info is-size-1">
-                  {Math.round((correct / (correct + incorrect)) * 100)}%
-                </p>
-              ) : (
-                <p className="has-text-info is-size-1">0%</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
-    </div>
+      <div className="result">
+        <p>Time Left :<strong> {timeLeft}</strong></p>
+        <p>Mistake:<strong></strong></p>
+        <p>WPM :</p>
+        <p>CpM:</p>
+        <button>Try Again</button>
+      </div>
+      <Footer />
+    </>
   );
 }
 
-export default App;
+export default Game;

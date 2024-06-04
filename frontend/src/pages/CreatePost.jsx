@@ -12,10 +12,9 @@ export const CreatePost = () => {
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
   const { user } = useContext(UserContext);
-
   const [cat, setCat] = useState("");
   const [cats, setCats] = useState([]);
-  console.log(file)
+  console.log(file);
 
   const navigate = useNavigate();
 
@@ -31,75 +30,106 @@ export const CreatePost = () => {
     updatedCats.splice(i, 1);
     setCats(updatedCats);
   };
-const handleCreate=async (e)=>{
-        e.preventDefault()
-        const post={
-          title,
-          desc,
-          username:user.username,
-          userId:user._id,
-          categories:cats
-        }
 
-        if(file){
-          const data=new FormData()
-          const filename=file.name
-          data.append("img",filename)
-          data.append("file",file)
-          post.photo=filename
-          // console.log(data)
-          //img upload
-          try{
-            const imgUpload=await axios.post(URL+"/api/upload",data)
-            // console.log(imgUpload.data)
-          }
-          catch(err){
-            console.log(err)
-          }
-        }
-        //post upload
-        // console.log(post)
-        try{
-          const res=await axios.post(URL+"/api/posts/create",post,{withCredentials:true})
-          navigate("/posts/post/"+res.data._id)
-          // console.log(res.data)
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const post = {
+      title,
+      desc,
+      username: user.username,
+      userId: user._id,
+      categories: cats,
+    };
 
-        }
-        catch(err){
-          console.log(err)
-        }
+    if (file) {
+      const data = new FormData();
+      const filename = file.name;
+      data.append("img", filename);
+      data.append("file", file);
+      post.photo = filename;
+
+      try {
+        const imgUpload = await axios.post(URL + "/api/upload", data);
+      } catch (err) {
+        console.log(err);
+      }
     }
+
+    try {
+      const res = await axios.post(URL + "/api/posts/create", post, {
+        withCredentials: true,
+      });
+      navigate("/posts/post/" + res.data._id);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
       <Navbar />
-      <div className="px-6 md:px-[100px] mt-20 bg-gray-300 w-[80%] mx-auto rounded-3xl mb-10 py-5">
-        <h1 className="font-bold md:text-2xl text-xl mt-10 ">Create solution</h1>
-        <form className="w-full flex flex-col space-y-4 md:space-y-8 mt-4" onSubmit={handleCreate}>
-          <input onChange={(e) => setTitle(e.target.value)} className="px-4 py-2 outline-none border-2 border-black rounded-3xl" type="text" placeholder="Enter post title" />
-          <input onChange={(e) => setFile(e.target.files[0])} className="px-4" type="file" />
+      <div className="px-6 md:px-[100px] mt-20 w-[80%] mx-auto  mb-10 py-5">
+        <h1 className="mt-10 text-xl font-bold md:text-2xl">Create solution</h1>
+        <form className="flex flex-col w-full mt-4 space-y-4 md:space-y-8" onSubmit={handleCreate}>
+          <input
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+            type="text"
+            placeholder="Enter post title"
+          />
+          <input
+            onChange={(e) => setFile(e.target.files[0])}
+            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+            type="file"
+          />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
-              <input value={cat} onChange={(e) => setCat(e.target.value)} className="px-4 py-2 border-2 border-black rounded-3xl" placeholder="Enter post category" type="text" />
-              <div onClick={addCategory} className="bg-black text-white px-4 py-2 font-semibold cursor-pointer  rounded-3xl ">Add</div>
+              <input
+                value={cat}
+                onChange={(e) => setCat(e.target.value)}
+                className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+                placeholder="Enter post category"
+                type="text"
+              />
+              <div
+                onClick={addCategory}
+                className="px-4 py-2 font-semibold text-white bg-black cursor-pointer rounded-3xl"
+              >
+                Add
+              </div>
             </div>
-            {/* Categories */}
             <div className="flex px-4 mt-3">
               {cats.map((c, i) => (
-                <div key={i} className="flex justify-center items-center space-x-2 mr-4 bg-gray-200 px-2 py-1 rounded-md">
+                <div
+                  key={i}
+                  className="flex items-center justify-center px-2 py-1 mr-4 space-x-2 bg-gray-200 rounded-md"
+                >
                   <p>{c}</p>
-                  <p onClick={() => deleteCategory(i)} className="text-white bg-black rounded-full cursor-pointer p-1 text-sm">
+                  <p
+                    onClick={() => deleteCategory(i)}
+                    className="p-1 text-sm text-white bg-black rounded-full cursor-pointer"
+                  >
                     <ImCross />
                   </p>
                 </div>
               ))}
             </div>
           </div>
-          <textarea onChange={(e) => setDesc(e.target.value)} rows={9} cols={30} className="px-4 py-2 border-2 border-black rounded-3xl" placeholder="Enter Post Description" />
-          <button className="bg-black w-full md:w-[20%] mx-auto text-white font-semibold px-4 pt-2 md:text-xl text-lg rounded-full pb-2">Create</button>
+          <textarea
+            onChange={(e) => setDesc(e.target.value)}
+            rows={9}
+            cols={30}
+            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+            placeholder="Enter Post Description"
+          />
+          <button
+            className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+          >
+            Create
+          </button>
         </form>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 };

@@ -2,18 +2,18 @@ import {IF} from '../url'
 
 const ProfilePosts = ({p}) => {
     return (
-        <div className="w-full flex mt-8 space-x-4 bg-gray-300 p-4 rounded-3xl ">
+        <div className="flex w-full p-4 mt-8 space-x-4 ">
           {/* Left */}
           <div className="w-[35%] h-[200px] flex justify-center items-center">
-    <img src={IF+p.photo} alt="" className="h-full w-full object-cover"/>
+    <img src={IF+p.photo} alt="" className="object-cover w-full h-full"/>
     
     </div>
        {/* Right */}
        <div className="flex flex-col w-[65%]">
-        <h1 className="text-xl font-bold md:-2 mb-1 md:text-2xl">
+        <h1 className="mb-1 text-xl font-bold md:-2 md:text-2xl">
         {p.title}
         </h1>
-        <div className="flex mb-2 text-sm font-semibold items-center justify-between text-gray-500 space-x-4 md:mb-4">
+        <div className="flex items-center justify-between mb-2 space-x-4 text-sm font-semibold text-gray-500 md:mb-4">
         <p>@{p.username}</p>
           <div className="flex space-x-2">
           <p>{new Date(p.updatedAt).toString().slice(0,15)}</p>

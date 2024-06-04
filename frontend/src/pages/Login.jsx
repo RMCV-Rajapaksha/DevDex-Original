@@ -17,6 +17,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+
     try {
       const res = await axios.post(URL + '/api/auth/login', {
         email,
