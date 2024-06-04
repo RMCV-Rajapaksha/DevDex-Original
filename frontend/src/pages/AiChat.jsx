@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
@@ -19,6 +19,10 @@ const AiChat = () => {
     setMessages([...messages, { sender: 'user', text: inputValue }, { sender: 'bot', text: responseText }]);
     setInputValue('');
   };
+
+  useEffect(() => {
+    setMessages([{sender: 'bot', text: "wellcome to chat"}, {sender: 'bot', text:"how can i help you"}])
+  }, []);
 
   return (
     <>
@@ -53,7 +57,7 @@ const AiChat = () => {
       <div className="flex items-center justify-center flex-grow mt-20 mb-16 overflow-auto">
         <div className="w-full max-w-4xl p-4">
           {messages.map((message, index) => (
-            <div key={index} className="flex justify-center mb-4 cursor-pointer">
+            <div key={index} className={`flex mb-4 cursor-pointer ${message.sender === 'bot' ? 'justify-start' : 'justify-end'}`}>
               {message.sender === 'bot' ? (
                 <>
                   <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
@@ -78,20 +82,33 @@ const AiChat = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-center w-full px-4 mb-4">
-        <div className="flex w-full max-w-2xl">
+      <div className="flex items-center justify-center w-full px-4 mb-4 m mt-[200px] ">
+        <div className="flex flex-col w-full max-w-2xl">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="flex-grow p-2 border rounded-md"
+            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
             placeholder="Type your message..."
           />
           <button
-            className="p-3 ml-2 font-semibold text-white bg-black hover:bg-gray-500 hover:text-black rounded-2xl"
+            className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
             onClick={sendMessage}
           >
-            Send
+            <svg
+              className="w-6 h-6 -ml-2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              viewBox="0 0 24 24"
+            >
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="8.5" cy="7" r="4" />
+              <path d="M20 8v6M23 11h-6" />
+            </svg>
+            <span className="ml-3">Send</span>
           </button>
         </div>
       </div>
