@@ -6,6 +6,7 @@ import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import { URL } from '../url';
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -14,7 +15,6 @@ export const CreatePost = () => {
   const { user } = useContext(UserContext);
   const [cat, setCat] = useState("");
   const [cats, setCats] = useState([]);
-  console.log(file);
 
   const navigate = useNavigate();
 
@@ -68,41 +68,60 @@ export const CreatePost = () => {
   return (
     <>
       <Navbar />
-      <div className="px-6 md:px-[100px] mt-20 w-[80%] mx-auto  mb-10 py-5">
-        <h1 className="mt-10 text-xl font-bold md:text-2xl">Create solution</h1>
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="px-6 md:px-[100px] mt-20 w-[80%] mx-auto mb-10 py-5"
+      >
+        <h1 className="mt-10 text-xl font-bold md:text-2xl">Create Solution</h1>
         <form className="flex flex-col w-full mt-4 space-y-4 md:space-y-8" onSubmit={handleCreate}>
-          <input
+          <motion.input
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
             type="text"
             placeholder="Enter post title"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           />
-          <input
+          <motion.input
             onChange={(e) => setFile(e.target.files[0])}
             className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
             type="file"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
-              <input
+              <motion.input
                 value={cat}
                 onChange={(e) => setCat(e.target.value)}
                 className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
                 placeholder="Enter post category"
                 type="text"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
               />
-              <div
+              <motion.div
                 onClick={addCategory}
-                className="px-4 py-2 font-semibold text-white bg-black cursor-pointer rounded-3xl"
+                className="px-4 py-3 font-semibold text-white cursor-pointer bg-gradient-to-r from-yellow-400 to-pink-600 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Add
-              </div>
+              </motion.div>
             </div>
             <div className="flex px-4 mt-3">
               {cats.map((c, i) => (
-                <div
+                <motion.div
                   key={i}
                   className="flex items-center justify-center px-2 py-1 mr-4 space-x-2 bg-gray-200 rounded-md"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
                   <p>{c}</p>
                   <p
@@ -111,24 +130,29 @@ export const CreatePost = () => {
                   >
                     <ImCross />
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
-          <textarea
+          <motion.textarea
             onChange={(e) => setDesc(e.target.value)}
             rows={9}
             cols={30}
             className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
             placeholder="Enter Post Description"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           />
-          <button
+          <motion.button
             className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Create
-          </button>
+          </motion.button>
         </form>
-      </div>
+      </motion.div>
       <Footer />
     </>
   );
