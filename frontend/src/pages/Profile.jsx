@@ -6,7 +6,8 @@ import axios from "axios";
 import { IF, URL } from "../url";
 import { UserContext } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router-dom";
-import profile from '../assets/images/profile.jpg'; 
+import profile from '../assets/images/profile.jpg';
+import { motion } from 'framer-motion';
 
 const Profile = () => {
   const param = useParams().id;
@@ -70,16 +71,30 @@ const Profile = () => {
   }, [param]);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Navbar />
       <div className="px-8 md:px-[200px] mt-20 flex md:flex-row flex-col-reverse md:items-start items-center">
-        <div className="flex flex-col md:w-[70%] w-full mt-4 md:mt-8">
+        <motion.div
+          className="flex flex-col md:w-[70%] w-full mt-4 md:mt-8"
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="mb-3 text-xl font-bold">Your Solutions:</h1>
           {posts?.map((p) => (
             <ProfilePosts key={p._id} p={p} />
           ))}
-        </div>
-        <div className="max-w-sm m-10">
+        </motion.div>
+        <motion.div
+          className="max-w-sm m-10"
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="px-4 pt-8 pb-10 bg-white border rounded-lg shadow-lg">
             <div className="relative mx-auto rounded-full w-36">
               <span className="absolute right-0 w-3 h-3 m-3 bg-green-500 rounded-full ring-2 ring-green-300 ring-offset-2"></span>
@@ -123,38 +138,40 @@ const Profile = () => {
                 placeholder="Your email"
                 type="email"
               />
-              {/* <input
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                placeholder="Your password"
-                type="password"
-              /> */}
               <div className="flex items-center w-full mt-4 space-x-4">
-                <button
+                <motion.button
                   onClick={handleUserUpdate}
+                  whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}
                   className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+              
                 >
                   Save
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                 whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}
                   onClick={handleUserDelete}
                   className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+                
                 >
                   Delete
-                </button>
+                </motion.button>
               </div>
               {updated && (
-                <h3 className="w-full mt-4 text-sm text-center text-green-500">
+                <motion.h3
+                  className="w-full mt-4 text-sm text-center text-green-500"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
                   User updated successfully!
-                </h3>
+                </motion.h3>
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
       <Footer />
-    </div>
+    </motion.div>
   );
 };
 

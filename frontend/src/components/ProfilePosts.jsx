@@ -1,8 +1,14 @@
 import {IF} from '../url'
+import { motion } from 'framer-motion';
 
 const ProfilePosts = ({p}) => {
     return (
-        <div className="flex w-full p-4 mt-8 space-x-4 ">
+        <motion.div className="flex w-full p-4 mt-8 space-x-4 rounded-xl "
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}
+        >
           {/* Left */}
           <div className="w-[35%] h-[200px] flex justify-center items-center">
     <img src={IF+p.photo} alt="" className="object-cover w-full h-full"/>
@@ -22,7 +28,7 @@ const ProfilePosts = ({p}) => {
         </div>
         <p className="text-sm md:text-lg">{p.desc.slice(0,200)+" ...Read more"}</p>
     </div>
-        </div>
+        </motion.div>
       )
     }
     

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 function Hero() {
 
@@ -6,11 +7,36 @@ function Hero() {
     // Define your login logic here
   };
 
+  const container = {
+    hidden: { opacity: 0, y: -30 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.2,
+        duration : 2,
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="w-screen h-screen ms:h-[80vh] md:h-[80vh] bg-black">
       <div className="max-w-5xl pt-16 mx-auto sm:pt-24">
-        <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-8">
-          <div className="px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex lg:items-center lg:text-left">
+        <motion.div
+          className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-8"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          <motion.div
+            className="px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex lg:items-center lg:text-left"
+            variants={item}
+          >
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -71,8 +97,11 @@ function Hero() {
                 </button>
               </div>
             </div>
-          </div>
-          <div className="flex items-center w-full col-span-6">
+          </motion.div>
+          <motion.div
+            className="flex items-center w-full col-span-6"
+            variants={item}
+          >
             <div className="flex items-center w-full max-w-2xl col-span-6 px-6 mx-auto h-96 lg:h-full">
               <div style={{ width: "100%", height: "100%" }}>
                 <div style={{ width: "100%", height: "100%" }}>
@@ -85,8 +114,8 @@ function Hero() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

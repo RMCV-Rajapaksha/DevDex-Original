@@ -11,7 +11,10 @@ import Hero from "../components/Hero";
 
 
 const Home = () => {
+  const path = useLocation()
+ 
   const { search } = useLocation();
+  console.log(search)
   const [posts, setPosts] = useState([]);
   const [noResults, setNoResults] = useState(false);
   const [loader, setLoader] = useState(false);

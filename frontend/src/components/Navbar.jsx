@@ -4,13 +4,15 @@ import { FaBars } from 'react-icons/fa';
 import { useState, useContext } from 'react';
 import Menu from './Menu';
 import { UserContext } from '../context/UserContext';
-import logo from '../assets/images/logo.png'; 
+import logo from '../assets/images/logo.png';
+import { motion } from "framer-motion";
+
 const Navbar = () => {
   const [prompt, setPrompt] = useState("");
   const [menu, setMenu] = useState(false);
   const navigate = useNavigate();
   const path = useLocation().pathname;
-
+  console.log(prompt);
   const showMenu = () => {
     setMenu(!menu);
   };
@@ -18,49 +20,80 @@ const Navbar = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <div className="bg-black flex items-center justify-between px-6 md:px-[200px] py-4 w-full fixed top-0 left-0 z-50">
+    <motion.div 
+      className="bg-black flex items-center justify-between px-6 md:px-[200px] py-4 w-full fixed top-0 left-0 z-50"
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h1 className='text-lg font-extrabold md:text-xl'>
         <Link className="text-white " to="/">
-        <img src={logo} alt="DevDex Logo" className="w-20 mr-2 h-15" />
-          </Link>
+          <motion.img 
+            whileHover={{ scale: 1.2, originX: 0 }} 
+            src={logo} 
+            alt="DevDex Logo" 
+            className="w-20 mr-2 h-15" 
+          />
+        </Link>
       </h1>
       {path === "/" && (
-        <div className='flex items-center justify-center space-x-0'>
-          <p onClick={() => navigate(prompt ? `?search=${prompt}` : "/")} className='cursor-pointer'>
+        <motion.div 
+          className='flex items-center justify-center space-x-0'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.p 
+            whileHover={{ scale: 1.2, originX: 0 }} 
+            onClick={() => navigate(prompt ? "?search="+prompt : "/")} 
+            className='m-3 cursor-pointer'
+          >
             <BsSearch style={{ color: 'white' }} />
-          </p>
+          </motion.p>
           <input
             onChange={(e) => setPrompt(e.target.value)}
             className='px-3 rounded-full outline-none'
             placeholder='Search a solution'
             type="text"
           />
-        </div>
+        </motion.div>
       )}
       <div className='items-center justify-center hidden space-x-2 md:flex md:space-x-4'>
         {user ? (
-          <h3 className='text-white'><Link to="/write">Write</Link></h3>
+          <motion.h3 whileHover={{ scale: 1.2, originX: 0 }} className='text-white'>
+            <Link to="/write">Write</Link>
+          </motion.h3>
         ) : (
-          <h3><Link className='text-white' to="/login">Login</Link></h3>
+          <motion.h3 whileHover={{ scale: 1.2, originX: 0 }} className='text-white'>
+            <Link to="/login">Login</Link>
+          </motion.h3>
         )}
         {user ? (
           <div onClick={showMenu}>
-            <p className="relative text-white cursor-pointer">
+            <motion.p 
+              whileHover={{ scale: 1.2, originX: 0 }} 
+              className="relative text-white cursor-pointer"
+            >
               <FaBars className="text-white cursor-pointer" />
-            </p>
+            </motion.p>
             {menu && <Menu />}
           </div>
         ) : (
-          <h3><Link className='text-white' to="/register">Register</Link></h3>
+          <motion.h3 whileHover={{ scale: 1.2, originX: 0 }} className='text-white'>
+            <Link to="/register">Register</Link>
+          </motion.h3>
         )}
       </div>
       <div onClick={showMenu} className='text-lg md:hidden'>
-        <p className="text-white cursor-pointer">
+        <motion.p 
+          whileHover={{ scale: 1.2, originX: 0 }} 
+          className="text-white cursor-pointer"
+        >
           <FaBars className="text-white cursor-pointer" />
-        </p>
+        </motion.p>
         {menu && <Menu />}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

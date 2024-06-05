@@ -97,7 +97,7 @@ navigate('/')
       <Navbar />
                 {loader?<div className="h-[80vh] flex justify-center items-center m-10"><Loader/></div>:
                   <div className="px-8 md:px-[200px] mt-20 m-10">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold text-black md:text-3xl">{post.title}</h1>
                     {user?._id===post?.userId && <div className="flex items-center justify-center space-x-2">
                     
@@ -114,14 +114,14 @@ navigate('/')
             <p>{new Date(post.updatedAt).toString().slice(16,24)}</p>
                     </div>
                   </div>
-                  <img src={IF+post.photo} className="w-full mx-auto mt-8" alt="" />
+                  <img src={IF+post.photo} className="w-full mx-auto mt-8 mb-5" alt="" />
                   <TextToSpeech text={post.desc}/>
                   <p className="mx-auto mt-8">{post.desc}</p>
                   <div className="flex items-center mt-8 space-x-4 font-semibold">
                     <p>Categories:</p>
-                    <div className="flex justify-center items-center space-x-2">
+                    <div className="flex items-center justify-center space-x-2">
                       {post.categories?.map((c,i)=>(
-          <div key ={i} className="bg-gray-300 rounded-lg px-3 py-1">{c}</div>
+          <div key ={i} className="px-3 py-1 bg-gray-300 rounded-lg">{c}</div>
                       ))}
                     
                       
@@ -135,9 +135,9 @@ navigate('/')
           <Comments key={c._id} c={c} post={post} />
          ))}
                     {/*write comment*/}
-                    <div className="w-full flex flex-col mt-4 md:flex-row">
-                      <input  onChange={(e)=>setComment(e.target.value)} type="text" placeholder="Write a comment" className="md:w-[80%] outline-none py-2 px-4 mt-4 md:mt-0" />
-                      <button onClick={postComment} className="bg-black text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0 rounded-3xl">Add Comment</button>
+                    <div className="flex flex-col w-full mt-4 md:flex-row">
+                      <input  onChange={(e)=>setComment(e.target.value)} type="text" placeholder="Write a comment" className="md:w-[80%] outline-none py-2 px-4 mt-4 md:mt-0  text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white" />
+                      <button onClick={postComment} className=" bg-gradient-to-r from-yellow-400 to-pink-600 text-sm text-white px-2 py-2 md:w-[20%] mt-4 md:mt-0 rounded-xl">Add Comment</button>
                     </div>
                   </div>
                 </div>}
