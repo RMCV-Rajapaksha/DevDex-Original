@@ -8,6 +8,7 @@ import Loader from '../components/Loader';
 import { UserContext } from "../context/UserContext";
 import { URL } from '../url';
 import Hero from "../components/Hero";
+import ChatApp from "../components/Chatwindow";
 
 
 const Home = () => {
@@ -54,6 +55,7 @@ const Home = () => {
           <h3 className="mt-16 font-bold text-center">No posts available</h3>
         )}
       </div>
+      <ChatApp/>
       <Footer />
     </>
   );
