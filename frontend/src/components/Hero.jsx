@@ -95,6 +95,7 @@ function Hero() {
                   </svg>
                   <span className="ml-3">Log In</span>
                 </button>
+                
               </div>
             </div>
           </motion.div>

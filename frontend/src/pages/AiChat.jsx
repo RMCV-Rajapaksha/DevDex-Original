@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import TextToSpeech from "../components/TextToSpeech";
 
 const AiChat = () => {
   const [messages, setMessages] = useState([]);
@@ -13,23 +14,27 @@ const AiChat = () => {
       url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ',
       method: 'post',
       data: {
-        contents: [{ parts: [{ text: inputValue }] }]
+        contents: [{ parts: [{ text: inputValue+"give as a paragraph" }] }]
       }
     });
     const responseText = res.data.candidates[0].content.parts[0].text;
-    setMessages([...messages, { sender: 'user', text: inputValue }, { sender: 'bot', text: responseText }]);
+    setMessages([...messages, { sender: 'user', text: inputValue }, { sender: 'bot1', text: responseText }]);
     setInputValue('');
   };
 
   useEffect(() => {
-    setMessages([{ sender: 'bot', text: "Welcome to chat" }, { sender: 'bot', text: "How can I help you?" }]);
+    setMessages([
+      { sender: 'bot', text: "Hello there, adventurer! 🌟 Welcome to our digital realm!" },
+      { sender: 'bot', text: "What quests shall we embark on today? Your journey awaits!" }
+  ]);
+  
   }, []);
 
   return (
     <>
       <Navbar />
      
-      <div className="flex items-center justify-center flex-grow mt-20 mb-16 overflow-auto">
+      <div className="flex items-center justify-center mt-20 mb-16 overflow-auto flex-grow-col">
         <div className="w-full max-w-4xl p-4">
           {messages.map((message, index) => (
             <motion.div
@@ -39,14 +44,16 @@ const AiChat = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              {message.sender === 'bot' ? (
+              {message.sender === 'bot' ||   message.sender === 'bot1' ? (
                 <>
                   <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
                     <img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" className="w-8 h-8 rounded-full" />
                   </div>
                   <div className="flex max-w-2xl gap-3 p-3 bg-white rounded-lg">
                     <p className="text-gray-700">{message.text}</p>
+                   
                   </div>
+                  {message.sender ==='bot1'? (<TextToSpeech text={message.text}/>):(<div></div>)}
                 </>
               ) : (
                 <>
