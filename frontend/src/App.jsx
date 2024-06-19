@@ -10,6 +10,7 @@ import Profile from './pages/Profile'
 import { UserContextProvider } from './context/UserContext'
 import Chat from './pages/AiChat'
 import MyBlogs from './pages/MyBlogs'
+import CheckoutSuccess from './components/CheckoutSuccess'
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
       <Route exact path="/profile/:id" element={<Profile/>}/>
       <Route exact path="/myblogs/:id" element={<MyBlogs/>}/>
       <Route exact path="/chat" element={<Chat/>}/>
+      <Route exact path="/checkout-success" element={<CheckoutSuccess/>}/>
   
       </Routes>
      
