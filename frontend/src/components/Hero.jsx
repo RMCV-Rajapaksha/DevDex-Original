@@ -15,9 +15,8 @@ function Hero() {
   const handleCheckout = async () => {
     try {
       // Send a request to create a checkout session
-      const res = await axios.post(URL + '/api/stripe/create-checkout-session', {
-        item: { name: "Buy me a coffee", price: 10 },
-      });
+      const res = await axios.post(URL + '/api/stripe/create-checkout-session'
+      );
       // Redirect to Stripe checkout
       window.location.href = res.data.url;
     } catch (error) {
