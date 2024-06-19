@@ -1,11 +1,31 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
+
+import axios from 'axios';
+import { UserContext } from "../context/UserContext";
+
+import { useContext, useState } from "react";
+
+
+
+import { URL } from '../url';
+
+import { motion } from "framer-motion";
 function Hero() {
-
-  const handleLogin = () => {
-    // Define your login logic here
+  const handleCheckout = async () => {
+    try {
+      // Send a request to create a checkout session
+      const res = await axios.post(URL + '/api/stripe/create-checkout-session', {
+        item: { name: "Buy me a coffee", price: 10 },
+      });
+      // Redirect to Stripe checkout
+      window.location.href = res.data.url;
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+  
 
   const container = {
     hidden: { opacity: 0, y: -30 },
@@ -77,7 +97,7 @@ function Hero() {
                   {/* You may add additional elements here */}
                 </div>
                 <button
-                  onClick={handleLogin}
+                  onClick={()=>handleCheckout()}
                   className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
                 >
                   <svg
@@ -93,7 +113,7 @@ function Hero() {
                     <circle cx="8.5" cy="7" r="4" />
                     <path d="M20 8v6M23 11h-6" />
                   </svg>
-                  <span className="ml-3">Log In</span>
+                  <span className="ml-3">Bye me a Coffie </span>
                 </button>
                 
               </div>

@@ -13,6 +13,7 @@ const authRoute = require('./routes/auth');
 const userRoute = require('./routes/users');
 const postRoute = require('./routes/posts');
 const commentRoute = require('./routes/comments');
+const stripe = require('./routes/stripe');
 
 // Database connection
 const connectDB = async () => {
@@ -45,6 +46,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
+app.use('/api/stripe', stripe);
 
 //image upload
 const storage = multer.diskStorage({
@@ -76,3 +78,7 @@ app.listen(PORT, async () => {
     await connectDB();
     console.log(`Server is running on port ${PORT}`);
 });
+
+
+
+//payment 
