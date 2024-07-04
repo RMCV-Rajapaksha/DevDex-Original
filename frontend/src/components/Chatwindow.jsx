@@ -21,12 +21,14 @@ const ChatContainer = ({ isOpen, toggleChatbox }) => {
 
   const sendMessage = async () => {
     try {
+
       const res = await axios.post(
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ',
         {
-          contents: [{ parts: [{ text: userMessage + " give as a paragraph" }] }]
+          contents: [{ parts: [{ text: userMessage + " check the given code is good code or bad code, is it good code output good and if it is bad output bad" }] }]
         }
       );
+     
       const responseText = res.data.candidates[0].content.parts[0].text;
       setMessages([...messages, { sender: 'user', text: userMessage }, { sender: 'bot1', text: responseText }]);
       const evaluation = evaluateCode(userMessage); // Evaluate the user input
@@ -71,7 +73,7 @@ const ChatContainer = ({ isOpen, toggleChatbox }) => {
   return (
     <div className={`fixed bottom-16 right-4 w-96 ${isOpen ? "" : "hidden"}`}>
       <div className="w-full max-w-lg bg-white rounded-lg shadow-md">
-        <div className="flex items-center justify-between p-4 text-white bg-blue-500 border-b rounded-t-lg">
+        <div className="flex items-center justify-between p-4 text-white bg-black border-b rounded-t-lg">
           <p className="text-lg font-semibold">Admin Bot</p>
           <button onClick={toggleChatbox} className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +84,7 @@ const ChatContainer = ({ isOpen, toggleChatbox }) => {
         <div className="p-4 overflow-y-auto h-80">
           {messages.map((msg, index) => (
             <div key={index} className={`mb-2 ${msg.user ? "text-right" : ""}`}>
-              <p className={`rounded-lg py-2 px-4 inline-block ${msg.user ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}>
+              <p className={`rounded-lg py-2 px-4 inline-block ${msg.user ? "bg-blue-500 text-white" : msg.text === "Bad code :(" ? "bg-red-500 text-white" : "bg-gray-200 text-gray-700"} `}>
                 {msg.text}
               </p>
             </div>
@@ -92,7 +94,7 @@ const ChatContainer = ({ isOpen, toggleChatbox }) => {
           <input
             type="text"
             placeholder="Type a message"
-            className="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-black"
             value={userMessage}
             onChange={(e) => setUserMessage(e.target.value)}
             onKeyPress={handleKeyPress}

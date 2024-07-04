@@ -12,6 +12,7 @@ function Menu() {
 
   const handleLogout = async () => {
     try {
+    
       const res = await axios.post(URL + "/api/auth/logout", {}, { withCredentials: true });
       console.log(res);
       if (res.status === 200) {
