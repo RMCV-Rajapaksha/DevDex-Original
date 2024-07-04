@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import axios from "axios";
+import { URL } from '../url';
 
 function Hero() {
 
-  const handleLogin = () => {
-    // Define your login logic here
+  const checkout = () => {
+    
   };
 
   const container = {
@@ -77,7 +79,7 @@ function Hero() {
                   {/* You may add additional elements here */}
                 </div>
                 <button
-                  onClick={handleLogin}
+                  onClick={checkout}
                   className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
                 >
                   <svg
@@ -93,7 +95,7 @@ function Hero() {
                     <circle cx="8.5" cy="7" r="4" />
                     <path d="M20 8v6M23 11h-6" />
                   </svg>
-                  <span className="ml-3">Log In</span>
+                  <span className="ml-3">Buy me a coffee</span>
                 </button>
                 
               </div>

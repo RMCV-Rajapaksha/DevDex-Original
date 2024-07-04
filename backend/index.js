@@ -8,11 +8,14 @@ const path = require('path');
 
 // Load environment variables from .env file
 dotenv.config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const authRoute = require('./routes/auth');
 const userRoute = require('./routes/users');
 const postRoute = require('./routes/posts');
 const commentRoute = require('./routes/comments');
+
+
 
 // Database connection
 const connectDB = async () => {
@@ -46,6 +49,39 @@ app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
 
+app.post('/api/checkout', async (req, res) => {
+    try {
+       
+
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: "usd",
+                        product_data: {
+                            name: "buy me a coffee",
+                        },
+                        unit_amount: 2000, // Price in cents (e.g., $20.00)
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: "http://localhost:5173", // Optionally, specify a dedicated success page
+            cancel_url: "http://localhost:5173", // Optionally, specify a dedicated cancel page
+        });
+
+        console.log(session); // Log the session object here
+
+        // Redirect the client to the Stripe Checkout page
+        res.redirect(303, session.url);
+    } catch (error) {
+        console.error('Error creating Stripe checkout session:', error.message);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
 //image upload
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -76,3 +112,5 @@ app.listen(PORT, async () => {
     await connectDB();
     console.log(`Server is running on port ${PORT}`);
 });
+
+
