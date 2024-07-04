@@ -5,8 +5,17 @@ import { URL } from '../url';
 
 function Hero() {
 
-  const checkout = () => {
-    
+  const checkout = async (e) => {
+    try {
+      const response = await axios.post(URL+'/api/checkout');
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      } else {
+        console.error('No URL returned from server');
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+    }
   };
 
   const container = {

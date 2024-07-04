@@ -49,37 +49,36 @@ app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/comments', commentRoute);
 
+
 app.post('/api/checkout', async (req, res) => {
     try {
-       
-
-        const session = await stripe.checkout.sessions.create({
-            line_items: [
-                {
-                    price_data: {
-                        currency: "usd",
-                        product_data: {
-                            name: "buy me a coffee",
-                        },
-                        unit_amount: 2000, // Price in cents (e.g., $20.00)
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            success_url: "http://localhost:5173", // Optionally, specify a dedicated success page
-            cancel_url: "http://localhost:5173", // Optionally, specify a dedicated cancel page
-        });
-
-        console.log(session); // Log the session object here
-
-        // Redirect the client to the Stripe Checkout page
-        res.redirect(303, session.url);
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "buy me a coffee",
+              },
+              unit_amount: 1000, 
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: "http://localhost:5173",
+        cancel_url: "http://localhost:5173",
+      });
+  
+      console.log(session); // Log the session object here
+  
+      // Send the session URL to the client
+      res.json({ url: session.url });
     } catch (error) {
-        console.error('Error creating Stripe checkout session:', error.message);
-        res.status(500).send("Internal Server Error");
+      console.error('Error creating Stripe checkout session:', error.message);
+      res.status(500).send("Internal Server Error");
     }
-});
+  });
 
 
 //image upload
