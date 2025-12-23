@@ -1,160 +1,262 @@
 import { useContext, useState } from "react";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import { ImCross } from "react-icons/im";
-import { UserContext } from "../context/UserContext";
-import axios from "axios";
-import { URL } from '../url';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { motion } from "framer-motion";
+import { FaTimes, FaPlus, FaImage, FaTags, FaPaperPlane } from "react-icons/fa";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { UserContext } from "../context/UserContext";
+import { URL } from '../url';
 
 export const CreatePost = () => {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
-  const { user } = useContext(UserContext);
-  const [cat, setCat] = useState("");
-  const [cats, setCats] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
-  const addCategory = () => {
-    let updatedCats = [...cats];
-    updatedCats.push(cat);
-    setCat("");
-    setCats(updatedCats);
+  const handleAddTag = () => {
+    const tag = tagInput.trim().toLowerCase();
+    if (tag && !tags.includes(tag) && tags.length < 5) {
+      setTags([...tags, tag]);
+      setTagInput("");
+    }
   };
 
-  const deleteCategory = (i) => {
-    let updatedCats = [...cats];
-    updatedCats.splice(i, 1);
-    setCats(updatedCats);
+  const handleRemoveTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      handleAddTag();
+    }
   };
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
+    if (!title.trim()) {
+      setError("Title is required");
+      return;
+    }
+    if (!desc.trim()) {
+      setError("Description is required");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
     const post = {
-      title,
-      desc,
+      title: title.trim(),
+      desc: desc.trim(),
       username: user.username,
       userId: user._id,
-      categories: cats,
+      categories: tags,
     };
 
     if (file) {
       const data = new FormData();
-      const filename = file.name;
-      data.append("img", filename);
+      data.append("img", file.name);
       data.append("file", file);
-      post.photo = filename;
+      post.photo = file.name;
 
       try {
-        const imgUpload = await axios.post(URL + "/api/upload", data);
+        await axios.post(`${URL}/api/upload`, data);
       } catch (err) {
         console.log(err);
       }
     }
 
     try {
-      const res = await axios.post(URL + "/api/posts/create", post, {
+      const res = await axios.post(`${URL}/api/posts/create`, post, {
         withCredentials: true,
       });
-      navigate("/posts/post/" + res.data._id);
+      navigate(`/posts/post/${res.data._id}`);
     } catch (err) {
+      setError("Failed to create question");
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navbar />
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="px-6 md:px-[100px] mt-20 w-[80%] mx-auto mb-10 py-5"
-      >
-        <h1 className="mt-10 text-xl font-bold md:text-2xl">Create Solution</h1>
-        <form className="flex flex-col w-full mt-4 space-y-4 md:space-y-8" onSubmit={handleCreate}>
-          <motion.input
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-            type="text"
-            placeholder="Enter post title"
-            initial={{ opacity: 0, y: -50 }}
+
+      <div className="pt-24 pb-12">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          />
-          <motion.input
-            onChange={(e) => setFile(e.target.files[0])}
-            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-            type="file"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          />
-          <div className="flex flex-col">
-            <div className="flex items-center space-x-4 md:space-x-8">
-              <motion.input
-                value={cat}
-                onChange={(e) => setCat(e.target.value)}
-                className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                placeholder="Enter post category"
-                type="text"
-                initial={{ opacity: 0, y: -50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              />
-              <motion.div
-                onClick={addCategory}
-                className="px-4 py-3 font-semibold text-white cursor-pointer bg-gradient-to-r from-yellow-400 to-pink-600 rounded-xl"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Add
-              </motion.div>
-            </div>
-            <div className="flex px-4 mt-3">
-              {cats.map((c, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-center justify-center px-2 py-1 mr-4 space-x-2 bg-gray-200 rounded-md"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                >
-                  <p>{c}</p>
-                  <p
-                    onClick={() => deleteCategory(i)}
-                    className="p-1 text-sm text-white bg-black rounded-full cursor-pointer"
-                  >
-                    <ImCross />
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-          <motion.textarea
-            onChange={(e) => setDesc(e.target.value)}
-            rows={9}
-            cols={30}
-            className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-            placeholder="Enter Post Description"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          />
-          <motion.button
-            className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
-            Create
-          </motion.button>
-        </form>
-      </motion.div>
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-white mb-2">Create Solution</h1>
+              <p className="text-slate-400">Share your knowledge with the community</p>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-6">
+              <h3 className="font-semibold text-blue-400 mb-2">✍️ Tips for a great solution</h3>
+              <ul className="text-sm text-blue-300/80 space-y-1">
+                <li>• Use a clear, descriptive title</li>
+                <li>• Include code examples where relevant</li>
+                <li>• Add relevant tags to help others find it</li>
+              </ul>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCreate} className="space-y-6">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400"
+                >
+                  {error}
+                </motion.div>
+              )}
+
+              {/* Title */}
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 p-6">
+                <label className="block text-white font-semibold mb-2">
+                  Title
+                </label>
+                <p className="text-slate-400 text-sm mb-3">
+                  Be specific and imagine you're explaining to someone
+                </p>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. How to fix CORS error in Express.js"
+                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  maxLength={200}
+                />
+              </div>
+
+              {/* Description */}
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 p-6">
+                <label className="block text-white font-semibold mb-2">
+                  Details
+                </label>
+                <p className="text-slate-400 text-sm mb-3">
+                  Include all the information someone would need
+                </p>
+                <textarea
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  rows={10}
+                  placeholder="Describe your solution in detail..."
+                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              {/* Tags */}
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 p-6">
+                <label className="block text-white font-semibold mb-2 flex items-center gap-2">
+                  <FaTags className="text-orange-500" /> Tags
+                </label>
+                <p className="text-slate-400 text-sm mb-3">
+                  Add up to 5 tags to describe what your solution is about
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {tags.map((tag, index) => (
+                    <motion.span
+                      key={index}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(index)}
+                        className="hover:text-white ml-1"
+                      >
+                        <FaTimes size={10} />
+                      </button>
+                    </motion.span>
+                  ))}
+                </div>
+
+                {tags.length < 5 && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Type a tag and press Enter"
+                      className="flex-1 px-4 py-2 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTag}
+                      className="px-4 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 flex items-center gap-2"
+                    >
+                      <FaPlus size={12} /> Add
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Image */}
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 p-6">
+                <label className="block text-white font-semibold mb-2 flex items-center gap-2">
+                  <FaImage className="text-orange-500" /> Image (Optional)
+                </label>
+                <p className="text-slate-400 text-sm mb-3">
+                  Add a screenshot or diagram if it helps explain
+                </p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="w-full px-4 py-2 bg-slate-900/50 border border-slate-600 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-orange-500 file:text-white file:cursor-pointer"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-pink-600 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <FaPaperPlane /> Publish Solution
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="px-6 py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      </div>
+
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: DevDex API
-  description: API documentation for DevDex - A developer blog platform with authentication, posts, comments, and payment integration
-  version: 1.0.0
+  title: DevDex API - Stack Overflow Style Q&A Platform
+  description: API documentation for DevDex - A developer Q&A platform with authentication, questions, answers, voting, tags, and payment integration
+  version: 2.0.0
   contact:
     name: DevDex Support
 
@@ -15,10 +15,14 @@ tags:
     description: User authentication and session management
   - name: Users
     description: User management operations
-  - name: Posts
-    description: Blog post operations
+  - name: Questions
+    description: Question/Post operations (Stack Overflow style)
+  - name: Answers
+    description: Answer operations with voting
   - name: Comments
     description: Comment operations
+  - name: Tags
+    description: Tag management and discovery
   - name: Upload
     description: File upload operations
   - name: Payment
@@ -43,20 +47,14 @@ components:
         _id:
           type: string
           description: MongoDB ObjectId
-          example: "507f1f77bcf86cd799439011"
         username:
           type: string
-          description: Unique username
-          example: "johndoe"
         email:
           type: string
           format: email
-          description: Unique email address
-          example: "john@example.com"
         password:
           type: string
           format: password
-          description: Hashed password (bcrypt)
           writeOnly: true
         createdAt:
           type: string
@@ -67,26 +65,7 @@ components:
           format: date-time
           readOnly: true
 
-    UserResponse:
-      type: object
-      properties:
-        _id:
-          type: string
-          example: "507f1f77bcf86cd799439011"
-        username:
-          type: string
-          example: "johndoe"
-        email:
-          type: string
-          example: "john@example.com"
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    Post:
+    Question:
       type: object
       required:
         - title
@@ -96,39 +75,112 @@ components:
       properties:
         _id:
           type: string
-          description: MongoDB ObjectId
           readOnly: true
         title:
           type: string
-          description: Unique post title
-          example: "Getting Started with Node.js"
+          description: Question title
         desc:
           type: string
-          description: Post content/description
-          example: "This is a comprehensive guide to Node.js..."
+          description: Question body/description
         photo:
           type: string
-          description: URL or path to post image
-          example: "http://localhost:5000/images/post1.jpg"
+          description: Optional image URL
         username:
           type: string
-          description: Author username
-          example: "johndoe"
         userId:
           type: string
-          description: Author user ID
-          example: "507f1f77bcf86cd799439011"
         categories:
           type: array
           items:
             type: string
-          description: Post categories/tags
-          example: ["nodejs", "javascript", "backend"]
+          description: Tags associated with the question
+        votes:
+          type: integer
+          default: 0
+        upvoters:
+          type: array
+          items:
+            type: string
+        downvoters:
+          type: array
+          items:
+            type: string
+        acceptedAnswerId:
+          type: string
+          nullable: true
+        views:
+          type: integer
+          default: 0
+        answerCount:
+          type: integer
+          default: 0
         createdAt:
           type: string
           format: date-time
           readOnly: true
         updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    Answer:
+      type: object
+      required:
+        - body
+        - questionId
+        - userId
+        - username
+      properties:
+        _id:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          description: Answer content
+        questionId:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        votes:
+          type: integer
+          default: 0
+        upvoters:
+          type: array
+          items:
+            type: string
+        downvoters:
+          type: array
+          items:
+            type: string
+        isAccepted:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    Tag:
+      type: object
+      properties:
+        _id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          description: Unique tag name (lowercase)
+        description:
+          type: string
+        questionCount:
+          type: integer
+          default: 0
+        createdAt:
           type: string
           format: date-time
           readOnly: true
@@ -143,83 +195,61 @@ components:
       properties:
         _id:
           type: string
-          description: MongoDB ObjectId
           readOnly: true
         comment:
           type: string
-          description: Comment text
-          example: "Great article! Very helpful."
         author:
           type: string
-          description: Comment author username
-          example: "janedoe"
         postId:
           type: string
-          description: Associated post ID
-          example: "507f1f77bcf86cd799439011"
         userId:
           type: string
-          description: Comment author user ID
-          example: "507f1f77bcf86cd799439012"
         createdAt:
           type: string
           format: date-time
           readOnly: true
-        updatedAt:
+
+    VoteRequest:
+      type: object
+      required:
+        - voteType
+        - userId
+      properties:
+        voteType:
+          type: integer
+          enum: [1, -1]
+          description: 1 for upvote, -1 for downvote
+        userId:
           type: string
-          format: date-time
-          readOnly: true
 
     Error:
       type: object
       properties:
         message:
           type: string
-          example: "An error occurred"
-
-    TokenData:
-      type: object
-      properties:
-        _id:
-          type: string
-          example: "507f1f77bcf86cd799439011"
-        username:
-          type: string
-          example: "johndoe"
-        email:
-          type: string
-          example: "john@example.com"
 
 paths:
   # Authentication Endpoints
   /api/auth/register:
     post:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Register a new user
-      description: Create a new user account with username, email, and password
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - username
-                - email
-                - password
+              required: [username, email, password]
               properties:
                 username:
                   type: string
-                  example: "johndoe"
                 email:
                   type: string
                   format: email
-                  example: "john@example.com"
                 password:
                   type: string
                   format: password
-                  example: "securePassword123"
       responses:
         '200':
           description: User registered successfully
@@ -229,35 +259,25 @@ paths:
                 $ref: '#/components/schemas/User'
         '500':
           description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   /api/auth/login:
     post:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Login user
-      description: Authenticate user and set JWT token in cookie
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - email
-                - password
+              required: [email, password]
               properties:
                 email:
                   type: string
                   format: email
-                  example: "john@example.com"
                 password:
                   type: string
                   format: password
-                  example: "securePassword123"
       responses:
         '200':
           description: Login successful
@@ -265,121 +285,60 @@ paths:
             Set-Cookie:
               schema:
                 type: string
-                example: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; Path=/; HttpOnly
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
         '400':
           description: User not found
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "User not found"
         '401':
           description: Wrong password
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Wrong password"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   /api/auth/logout:
     get:
-      tags:
-        - Authentication
+      tags: [Authentication]
       summary: Logout user
-      description: Clear authentication token cookie
       responses:
         '200':
           description: Logout successful
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "User Logged out"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   /api/auth/refetch:
     get:
-      tags:
-        - Authentication
-      summary: Refetch user data
-      description: Get current user data from JWT token (used to persist login state)
+      tags: [Authentication]
+      summary: Refetch user data from token
       security:
         - cookieAuth: []
       responses:
         '200':
-          description: User data retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenData'
-        '404':
-          description: Invalid or expired token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: User data retrieved
 
   # User Endpoints
   /api/users/{id}:
     get:
-      tags:
-        - Users
+      tags: [Users]
       summary: Get user by ID
-      description: Retrieve user information (password excluded)
       parameters:
         - name: id
           in: path
           required: true
-          description: User ID
           schema:
             type: string
-            example: "507f1f77bcf86cd799439011"
       responses:
         '200':
-          description: User data retrieved successfully
+          description: User data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/User'
 
     put:
-      tags:
-        - Users
+      tags: [Users]
       summary: Update user
-      description: Update user information (requires authentication)
       security:
         - cookieAuth: []
       parameters:
         - name: id
           in: path
           required: true
-          description: User ID
           schema:
             type: string
-            example: "507f1f77bcf86cd799439011"
       requestBody:
-        required: true
         content:
           application/json:
             schema:
@@ -387,338 +346,458 @@ paths:
               properties:
                 username:
                   type: string
-                  example: "newusername"
                 email:
                   type: string
-                  format: email
-                  example: "newemail@example.com"
-                password:
-                  type: string
-                  format: password
-                  example: "newPassword123"
       responses:
         '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '403':
-          description: Invalid token
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not valid"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: User updated
 
     delete:
-      tags:
-        - Users
+      tags: [Users]
       summary: Delete user
-      description: Delete user and all associated posts and comments (requires authentication)
       security:
         - cookieAuth: []
       parameters:
         - name: id
           in: path
           required: true
-          description: User ID
           schema:
             type: string
-            example: "507f1f77bcf86cd799439011"
       responses:
         '200':
-          description: User deleted successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "User has been deleted!"
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '403':
-          description: Invalid token
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not valid"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: User deleted
 
-  # Post Endpoints
-  /api/posts/create:
-    post:
-      tags:
-        - Posts
-      summary: Create a new post
-      description: Create a new blog post (requires authentication)
-      security:
-        - cookieAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - title
-                - desc
-                - username
-                - userId
-              properties:
-                title:
-                  type: string
-                  example: "My First Blog Post"
-                desc:
-                  type: string
-                  example: "This is the content of my blog post..."
-                photo:
-                  type: string
-                  example: "http://localhost:5000/images/post1.jpg"
-                username:
-                  type: string
-                  example: "johndoe"
-                userId:
-                  type: string
-                  example: "507f1f77bcf86cd799439011"
-                categories:
-                  type: array
-                  items:
-                    type: string
-                  example: ["javascript", "nodejs"]
-      responses:
-        '200':
-          description: Post created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/posts/{id}:
-    get:
-      tags:
-        - Posts
-      summary: Get post by ID
-      description: Retrieve a specific post by its ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Post ID
-          schema:
-            type: string
-            example: "507f1f77bcf86cd799439011"
-      responses:
-        '200':
-          description: Post retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    put:
-      tags:
-        - Posts
-      summary: Update post
-      description: Update an existing post (requires authentication)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Post ID
-          schema:
-            type: string
-            example: "507f1f77bcf86cd799439011"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: "Updated Post Title"
-                desc:
-                  type: string
-                  example: "Updated content..."
-                photo:
-                  type: string
-                  example: "http://localhost:5000/images/updated.jpg"
-                categories:
-                  type: array
-                  items:
-                    type: string
-                  example: ["updated", "tags"]
-      responses:
-        '200':
-          description: Post updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    delete:
-      tags:
-        - Posts
-      summary: Delete post
-      description: Delete a post and all associated comments (requires authentication)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Post ID
-          schema:
-            type: string
-            example: "507f1f77bcf86cd799439011"
-      responses:
-        '200':
-          description: Post deleted successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Post has been deleted!"
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
+  # Question Endpoints
   /api/posts:
     get:
-      tags:
-        - Posts
-      summary: Get all posts or search posts
-      description: Retrieve all posts or search posts by title
+      tags: [Questions]
+      summary: Get all questions with filtering and sorting
       parameters:
         - name: search
           in: query
-          required: false
-          description: Search term to filter posts by title (case-insensitive)
           schema:
             type: string
-            example: "nodejs"
+          description: Search in title and description
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, active, unanswered, votes]
+        - name: tag
+          in: query
+          schema:
+            type: string
+          description: Filter by tag name
       responses:
         '200':
-          description: Posts retrieved successfully
+          description: List of questions
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
-        '500':
-          description: Server error
+                  $ref: '#/components/schemas/Question'
+
+  /api/posts/create:
+    post:
+      tags: [Questions]
+      summary: Create a new question
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, desc, username, userId]
+              properties:
+                title:
+                  type: string
+                desc:
+                  type: string
+                photo:
+                  type: string
+                username:
+                  type: string
+                userId:
+                  type: string
+                categories:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Question created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Question'
+
+  /api/posts/{id}:
+    get:
+      tags: [Questions]
+      summary: Get question by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Question details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+
+    put:
+      tags: [Questions]
+      summary: Update question
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                desc:
+                  type: string
+                categories:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Question updated
+
+    delete:
+      tags: [Questions]
+      summary: Delete question and all associated answers
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Question deleted
+
+  /api/posts/{id}/vote:
+    put:
+      tags: [Questions]
+      summary: Vote on a question
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteRequest'
+      responses:
+        '200':
+          description: Vote registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+
+  /api/posts/{id}/view:
+    put:
+      tags: [Questions]
+      summary: Increment view count
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: View count incremented
+
+  /api/posts/{id}/accept/{answerId}:
+    put:
+      tags: [Questions]
+      summary: Accept an answer
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Answer accepted
 
   /api/posts/user/{userId}:
     get:
-      tags:
-        - Posts
-      summary: Get posts by user
-      description: Retrieve all posts created by a specific user
+      tags: [Questions]
+      summary: Get questions by user
       parameters:
         - name: userId
           in: path
           required: true
-          description: User ID
           schema:
             type: string
-            example: "507f1f77bcf86cd799439011"
       responses:
         '200':
-          description: User posts retrieved successfully
+          description: User's questions
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
-        '500':
-          description: Server error
+                  $ref: '#/components/schemas/Question'
+
+  /api/posts/tag/{tagName}:
+    get:
+      tags: [Questions]
+      summary: Get questions by tag
+      parameters:
+        - name: tagName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Questions with tag
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+
+  # Answer Endpoints
+  /api/answers/create:
+    post:
+      tags: [Answers]
+      summary: Create a new answer
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body, questionId, userId, username]
+              properties:
+                body:
+                  type: string
+                questionId:
+                  type: string
+                userId:
+                  type: string
+                username:
+                  type: string
+      responses:
+        '200':
+          description: Answer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+
+  /api/answers/question/{questionId}:
+    get:
+      tags: [Answers]
+      summary: Get answers for a question
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of answers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Answer'
+
+  /api/answers/{id}:
+    put:
+      tags: [Answers]
+      summary: Update answer
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+      responses:
+        '200':
+          description: Answer updated
+
+    delete:
+      tags: [Answers]
+      summary: Delete answer
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Answer deleted
+
+  /api/answers/{id}/vote:
+    put:
+      tags: [Answers]
+      summary: Vote on an answer
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteRequest'
+      responses:
+        '200':
+          description: Vote registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Answer'
+
+  # Tag Endpoints
+  /api/tags:
+    get:
+      tags: [Tags]
+      summary: Get all tags
+      responses:
+        '200':
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+    post:
+      tags: [Tags]
+      summary: Create or update tag
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Tag created/updated
+
+  /api/tags/popular:
+    get:
+      tags: [Tags]
+      summary: Get popular tags (top 20)
+      responses:
+        '200':
+          description: Popular tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+  /api/tags/search:
+    get:
+      tags: [Tags]
+      summary: Search tags
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matching tags
+
+  /api/tags/{name}:
+    get:
+      tags: [Tags]
+      summary: Get tag by name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
 
   # Comment Endpoints
   /api/comments/create:
     post:
-      tags:
-        - Comments
-      summary: Create a new comment
-      description: Add a comment to a post (requires authentication)
+      tags: [Comments]
+      summary: Create a comment
       security:
         - cookieAuth: []
       requestBody:
@@ -727,204 +806,98 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - comment
-                - author
-                - postId
-                - userId
+              required: [comment, author, postId, userId]
               properties:
                 comment:
                   type: string
-                  example: "Great post! Very informative."
                 author:
                   type: string
-                  example: "janedoe"
                 postId:
                   type: string
-                  example: "507f1f77bcf86cd799439011"
                 userId:
                   type: string
-                  example: "507f1f77bcf86cd799439012"
       responses:
         '200':
-          description: Comment created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Comment'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/comments/{id}:
-    put:
-      tags:
-        - Comments
-      summary: Update comment
-      description: Update an existing comment (requires authentication)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Comment ID
-          schema:
-            type: string
-            example: "507f1f77bcf86cd799439011"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                comment:
-                  type: string
-                  example: "Updated comment text"
-      responses:
-        '200':
-          description: Comment updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Comment'
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    delete:
-      tags:
-        - Comments
-      summary: Delete comment
-      description: Delete a comment (requires authentication)
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Comment ID
-          schema:
-            type: string
-            example: "507f1f77bcf86cd799439011"
-      responses:
-        '200':
-          description: Comment deleted successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Comment has been deleted!"
-        '401':
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "You are not authenticated"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: Comment created
 
   /api/comments/post/{postId}:
     get:
-      tags:
-        - Comments
-      summary: Get comments by post
-      description: Retrieve all comments for a specific post
+      tags: [Comments]
+      summary: Get comments for a post
       parameters:
         - name: postId
           in: path
           required: true
-          description: Post ID
           schema:
             type: string
-            example: "507f1f77bcf86cd799439011"
       responses:
         '200':
-          description: Comments retrieved successfully
+          description: List of comments
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Comment'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
-  # File Upload Endpoint
+  /api/comments/{id}:
+    put:
+      tags: [Comments]
+      summary: Update comment
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment updated
+
+    delete:
+      tags: [Comments]
+      summary: Delete comment
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Comment deleted
+
+  # Upload Endpoint
   /api/upload:
     post:
-      tags:
-        - Upload
+      tags: [Upload]
       summary: Upload an image
-      description: Upload an image file to the server
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
-              required:
-                - file
               properties:
                 file:
                   type: string
                   format: binary
-                  description: Image file to upload
       responses:
         '200':
-          description: Image uploaded successfully
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Image has been uploaded successfully"
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          description: Image uploaded
 
   # Payment Endpoint
   /api/checkout:
     post:
-      tags:
-        - Payment
+      tags: [Payment]
       summary: Create Stripe checkout session
-      description: Create a Stripe checkout session for "buy me a coffee" payment
       responses:
         '200':
-          description: Checkout session created successfully
+          description: Checkout session created
           content:
             application/json:
               schema:
@@ -932,12 +905,3 @@ paths:
                 properties:
                   url:
                     type: string
-                    description: Stripe checkout session URL
-                    example: "https://checkout.stripe.com/pay/cs_test_..."
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                type: string
-                example: "Internal Server Error"

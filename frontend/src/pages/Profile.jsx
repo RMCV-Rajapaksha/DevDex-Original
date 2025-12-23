@@ -1,54 +1,91 @@
 import { useContext, useEffect, useState } from "react";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import ProfilePosts from "../components/ProfilePosts";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { IF, URL } from "../url";
-import { UserContext } from "../context/UserContext";
-import { useNavigate, useParams } from "react-router-dom";
-import profile from '../assets/images/profile.jpg';
 import { motion } from 'framer-motion';
+import { FaQuestion, FaCheckCircle, FaTrophy, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import QuestionCard from "../components/QuestionCard";
+import Loader from "../components/Loader";
+import { UserContext } from "../context/UserContext";
+import { URL } from "../url";
 
 const Profile = () => {
-  const param = useParams().id;
+  const { id: profileId } = useParams();
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext);
+
+  const [profileUser, setProfileUser] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [reputation, setReputation] = useState(0);
+  const [stats, setStats] = useState({ questions: 0, answers: 0, accepted: 0 });
+
+  // Edit form
+  const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(UserContext);
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [updated, setUpdated] = useState(false);
+
+  const isOwnProfile = user && user._id === profileId;
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(URL + "/api/users/" + user._id);
+      const res = await axios.get(`${URL}/api/users/${profileId}`);
+      setProfileUser(res.data);
       setUsername(res.data.username);
       setEmail(res.data.email);
-      setPassword(res.data.password);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const handleUserUpdate = async () => {
-    setUpdated(false);
+  const fetchQuestions = async () => {
     try {
-      const res = await axios.put(
-        URL + "/api/users/" + user._id,
-        { username, email, password },
-        { withCredentials: true }
-      );
-      console.log(res.data);
-      setUpdated(true);
+      const res = await axios.get(`${URL}/api/posts/user/${profileId}`);
+      setQuestions(res.data);
+
+      const questionRep = res.data.reduce((sum, q) => sum + (q.votes || 0) * 10, 0);
+      setReputation(questionRep);
+      setStats(prev => ({ ...prev, questions: res.data.length }));
     } catch (err) {
       console.log(err);
-      setUpdated(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      setReputation(0);
+      await Promise.all([fetchProfile(), fetchQuestions()]);
+      setLoading(false);
+    };
+    loadData();
+  }, [profileId]);
+
+  const handleUserUpdate = async () => {
+    setUpdateLoading(true);
+    try {
+      await axios.put(
+        `${URL}/api/users/${user._id}`,
+        { username, email },
+        { withCredentials: true }
+      );
+      setUpdated(true);
+      setIsEditing(false);
+      setTimeout(() => setUpdated(false), 3000);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setUpdateLoading(false);
     }
   };
 
   const handleUserDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
-      const res = await axios.delete(URL + "/api/users/" + user._id, { withCredentials: true });
+      await axios.delete(`${URL}/api/users/${user._id}`, { withCredentials: true });
       setUser(null);
       navigate("/");
     } catch (err) {
@@ -56,122 +93,205 @@ const Profile = () => {
     }
   };
 
-  const fetchUserPosts = async () => {
-    try {
-      const res = await axios.get(URL + "/api/posts/user/" + user._id);
-      setPosts(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Navbar />
+        <div className="h-[80vh] flex justify-center items-center">
+          <Loader />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    fetchProfile();
-    fetchUserPosts();
-  }, [param]);
+  if (!profileUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <Navbar />
+        <div className="h-[80vh] flex justify-center items-center">
+          <p className="text-slate-400">User not found</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navbar />
-      <div className="px-8 md:px-[200px] mt-20 flex md:flex-row flex-col-reverse md:items-start items-center">
-        <motion.div
-          className="flex flex-col md:w-[70%] w-full mt-4 md:mt-8"
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="mb-3 text-xl font-bold">Your Solutions:</h1>
-          {posts?.map((p) => (
-            <ProfilePosts key={p._id} p={p} />
-          ))}
-        </motion.div>
-        <motion.div
-          className="max-w-sm m-10"
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="px-4 pt-8 pb-10 bg-white border rounded-lg shadow-lg">
-            <div className="relative mx-auto rounded-full w-36">
-              <span className="absolute right-0 w-3 h-3 m-3 bg-green-500 rounded-full ring-2 ring-green-300 ring-offset-2"></span>
-              <img
-                className="w-full h-auto mx-auto rounded-full"
-                src={profile}
-                alt=""
-              />
-            </div>
-            <h1 className="my-1 text-xl font-bold leading-8 text-center text-gray-900">{username}</h1>
 
-            <p className="text-sm leading-6 text-center text-gray-500 hover:text-gray-600">
-              Your description goes here
-            </p>
-            <ul className="px-3 py-2 mt-3 text-gray-600 bg-gray-100 divide-y rounded shadow-sm hover:text-gray-700 hover:shadow">
-              <li className="flex items-center py-3 text-sm">
-                <span>Status</span>
-                <span className="ml-auto">
-                  <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-200 rounded-full">
-                    Writer
+      <div className="pt-24 pb-12">
+        <div className="max-w-5xl mx-auto px-4">
+
+          {/* Profile Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6 mb-6"
+          >
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                <div className="w-28 h-28 bg-gradient-to-br from-orange-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                  <span className="text-white text-5xl font-bold">
+                    {profileUser.username?.charAt(0).toUpperCase()}
                   </span>
-                </span>
-              </li>
-              <li className="flex items-center py-3 text-sm">
-                <span>Email</span>
-                <span className="ml-auto">{email}</span>
-              </li>
-            </ul>
-            <div className="flex flex-col items-start mt-4 space-y-4">
-              <input
-                onChange={(e) => setUsername(e.target.value)}
-                value={username}
-                className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                placeholder="Your username"
-                type="text"
-              />
-              <input
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
-                className="w-full px-8 py-4 mt-5 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                placeholder="Your email"
-                type="email"
-              />
-              <div className="flex items-center w-full mt-4 space-x-4">
-                <motion.button
-                  onClick={handleUserUpdate}
-                  whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}
-                  className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
-              
-                >
-                  Save
-                </motion.button>
-                <motion.button
-                 whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}
-                  onClick={handleUserDelete}
-                  className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
-                
-                >
-                  Delete
-                </motion.button>
+                </div>
               </div>
-              {updated && (
-                <motion.h3
-                  className="w-full mt-4 text-sm text-center text-green-500"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  User updated successfully!
-                </motion.h3>
+
+              {/* Info */}
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-white">
+                  {profileUser.username}
+                </h1>
+                <p className="text-slate-400 mt-1">{profileUser.email}</p>
+                <p className="text-sm text-slate-500 mt-2">
+                  Member since {new Date(profileUser.createdAt).toLocaleDateString()}
+                </p>
+
+                {/* Stats */}
+                <div className="flex flex-wrap gap-6 mt-4">
+                  <div className="flex items-center gap-2">
+                    <FaTrophy className="text-yellow-500" />
+                    <span className="font-bold text-2xl text-white">{reputation}</span>
+                    <span className="text-slate-400">reputation</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaQuestion className="text-blue-400" />
+                    <span className="font-bold text-white">{stats.questions}</span>
+                    <span className="text-slate-400">questions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaCheckCircle className="text-green-400" />
+                    <span className="font-bold text-white">{stats.accepted}</span>
+                    <span className="text-slate-400">accepted</span>
+                  </div>
+                </div>
+
+                {updated && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 text-green-400 text-sm"
+                  >
+                    Profile updated successfully!
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Edit Button */}
+              {isOwnProfile && !isEditing && (
+                <div>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 flex items-center gap-2"
+                  >
+                    <FaEdit /> Edit
+                  </button>
+                </div>
               )}
             </div>
-          </div>
-        </motion.div>
+
+            {/* Edit Form */}
+            {isOwnProfile && isEditing && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mt-6 pt-6 border-t border-slate-700"
+              >
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-300 text-sm font-medium mb-2">
+                      Username
+                    </label>
+                    <input
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-900/50 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-300 text-sm font-medium mb-2">
+                      Email
+                    </label>
+                    <input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-900/50 border border-slate-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={handleUserUpdate}
+                    disabled={updateLoading}
+                    className="px-5 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg hover:from-orange-600 hover:to-pink-600 flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <FaSave /> Save
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="px-5 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 flex items-center gap-2"
+                  >
+                    <FaTimes /> Cancel
+                  </button>
+                  <button
+                    onClick={handleUserDelete}
+                    className="px-5 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 flex items-center gap-2 ml-auto"
+                  >
+                    <FaTrash /> Delete Account
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Questions Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <FaQuestion className="text-orange-500" />
+              Questions ({stats.questions})
+            </h2>
+
+            {questions.length > 0 ? (
+              <div className="space-y-4">
+                {questions.map((q, index) => (
+                  <motion.div
+                    key={q._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <QuestionCard question={q} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-8 text-center">
+                <FaQuestion className="text-5xl text-slate-600 mx-auto mb-4" />
+                <p className="text-slate-400 mb-4">No questions yet</p>
+                {isOwnProfile && (
+                  <Link
+                    to="/ask"
+                    className="inline-block px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg hover:from-orange-600 hover:to-pink-600"
+                  >
+                    Ask your first question
+                  </Link>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </div>
       </div>
+
       <Footer />
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,130 +1,167 @@
+import { Link } from 'react-router-dom';
 import { motion } from "framer-motion";
-import logo from '../assets/images/logo.png'; 
+import { FaGithub, FaLinkedin, FaTwitter, FaHeart, FaCode, FaQuestionCircle, FaTags, FaUsers } from 'react-icons/fa';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    platform: [
+      { to: '/', label: 'Questions', icon: <FaQuestionCircle /> },
+      { to: '/tags', label: 'Tags', icon: <FaTags /> },
+      { to: '/chat', label: 'AI Assistant', icon: <FaCode /> },
+    ],
+    company: [
+      { href: '#', label: 'About Us' },
+      { href: '#', label: 'Privacy Policy' },
+      { href: '#', label: 'Terms of Service' },
+      { href: '#', label: 'Contact' },
+    ],
+    social: [
+      { href: 'https://github.com', icon: <FaGithub />, label: 'GitHub' },
+      { href: 'https://linkedin.com', icon: <FaLinkedin />, label: 'LinkedIn' },
+      { href: 'https://twitter.com', icon: <FaTwitter />, label: 'Twitter' },
+    ],
+  };
+
+  const stats = [
+    { value: '10K+', label: 'Questions' },
+    { value: '25K+', label: 'Answers' },
+    { value: '5K+', label: 'Developers' },
+  ];
+
   return (
     <motion.footer
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
+      className="bg-gradient-to-b from-slate-900 to-slate-950"
     >
-      <div className="py-4 text-white bg-black">
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-wrap justify-between -mx-4">
-            <motion.div 
-              className="w-full px-4 my-4 xl:w-1/5"
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <a href="/" className="block w-56 mb-10">
-                <svg version="1.1" viewBox="0 0 3368 512" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none" fillRule="evenodd">
-                    <g transform="translate(0 -75)">
-                      <g transform="translate(0 75)">
-                        <img src={logo} alt="DevDex Logo" className="w-20 mr-2 h-15" />
-                      </g>
-                      <text fill="white" fontFamily="Nunito-Bold, Nunito" fontSize="512" fontWeight="bold">
-                        <tspan x="654" y="518">DevDex</tspan>
-                      </text>
-                    </g>
-                  </g>
-                </svg>
-              </a>
-              <p className="text-justify">
-                DevDex - From Bugs to Brilliance is a platform for coders to discuss errors encountered in code and the problems they face. It features text-to-speech functionality and an AI chatbot to assist users.
+      {/* Stats Section */}
+      <div className="border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="grid grid-cols-3 gap-8 mb-12">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
+                  {stat.value}
+                </div>
+                <div className="text-slate-400 text-sm mt-1">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <Link to="/" className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">D</span>
+                </div>
+                <span className="text-xl font-bold text-white">DevDex</span>
+              </Link>
+              <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                From Bugs to Brilliance. A Q&A platform for developers to discuss code, solve problems, and grow together.
               </p>
-            </motion.div>
-
-            <motion.div 
-              className="w-full px-4 my-4 sm:w-auto"
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div>
-                <h2 className="inline-block pb-4 mb-4 text-2xl border-b-4 border-gray-500">Company</h2>
-              </div>
-              <ul className="leading-8">
-                {['About Us', 'Terms & Conditions', 'Privacy Policy', 'Contact Us'].map((item, index) => (
-                  <motion.li 
+              <div className="flex gap-3">
+                {footerLinks.social.map((social, index) => (
+                  <a
                     key={index}
-                    whileHover={{ scale: 1.1 }}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all"
+                    title={social.label}
                   >
-                    <a href="#" className="hover:text-gray-400">{item}</a>
-                  </motion.li>
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Platform Links */}
+            <div>
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <FaCode className="text-orange-500" /> Platform
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.platform.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      to={link.to}
+                      className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm"
+                    >
+                      {link.icon} {link.label}
+                    </Link>
+                  </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              className="w-full px-4 my-4 sm:w-auto"
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div>
-                <h2 className="inline-block pb-4 mb-4 text-2xl border-b-4 border-gray-500">Blog</h2>
-              </div>
-              <ul className="leading-8">
-                {[
-                  'Getting Started With HTML and CSS',
-                  'What Is Flex And When to Use It?',
-                  'How TailwindCSS Can Help Your Productivity?',
-                  '5 Tips to Make Responsive Website',
-                  'See More'
-                ].map((item, index) => (
-                  <motion.li 
-                    key={index}
-                    whileHover={{ scale: 1.1 }}
-                  >
-                    <a href="#" className="hover:text-gray-400">{item}</a>
-                  </motion.li>
+            {/* Company Links */}
+            <div>
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <FaUsers className="text-orange-500" /> Company
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.company.map((link, index) => (
+                  <li key={index}>
+                    <a
+                      href={link.href}
+                      className="text-slate-400 hover:text-white transition-colors text-sm"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              className="w-full px-4 my-4 sm:w-auto xl:w-1/5"
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div>
-                <h2 className="inline-block pb-4 mb-4 text-2xl border-b-4 border-gray-500">Connect With Us</h2>
-              </div>
-              {[
-                { name: 'Linkedin', link: 'https://www.linkedin.com/in/chamara-vishwajith-09b561242?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app' },
-                { name: 'Facebook', link: 'https://www.facebook.com/vira.kuma?mibextid=ZbWKwL' },
-                { name: 'Medium', link: 'https://medium.com/@sch.chamara' }
-              ].map((item, index) => (
-                <motion.li 
-                  key={index}
-                  whileHover={{ scale: 1.1 }}
+            {/* Newsletter */}
+            <div>
+              <h3 className="text-white font-semibold mb-4">Stay Updated</h3>
+              <p className="text-slate-400 text-sm mb-4">
+                Get the latest developer tips and platform updates.
+              </p>
+              <form className="space-y-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                />
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium rounded-lg hover:from-orange-600 hover:to-pink-600 transition-all text-sm"
                 >
-                  <a href={item.link} className="hover:text-gray-400">{item.name}</a>
-                </motion.li>
-              ))}
-            </motion.div>
+                  Subscribe
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-      <div className="py-4 text-white bg-black">
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-wrap justify-between -mx-4">
-            <div className="w-full px-4 text-center sm:w-auto sm:text-left">
-              Copyright © 2024
-              <script>{`new Date().getFullYear() > 2020 && document.write("- " + new Date().getFullYear())`}</script>- 2026
-              DevDex. All Rights Reserved.
-            </div>
-            <div className="w-full px-4 text-center sm:w-auto sm:text-left">
-              Made with Advanced Technology
-            </div>
+
+      {/* Bottom Bar */}
+      <div className="border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-slate-500 text-sm">
+              © {currentYear} DevDex. All rights reserved.
+            </p>
+            <p className="text-slate-500 text-sm flex items-center gap-1">
+              Made with <FaHeart className="text-red-500" /> by developers, for developers
+            </p>
           </div>
         </div>
       </div>
     </motion.footer>
-  )
-}
+  );
+};
 
 export default Footer;
