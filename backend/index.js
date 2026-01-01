@@ -40,7 +40,7 @@ const app = express();
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")))
 app.use(cors({
-  origin: 'http://localhost:5173', // Ensure no trailing slash
+  origin: '*', // Allow all origins
   credentials: true,
 }));
 app.use(cookieParser());
