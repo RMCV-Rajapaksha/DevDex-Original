@@ -53,6 +53,15 @@ app.use('/api/comments', commentRoute);
 app.use('/api/answers', answerRoute);
 app.use('/api/tags', tagRoute);
 
+// Testing endpoint
+app.get('/api/test', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Backend API is working correctly!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 app.post('/api/checkout', async (req, res) => {
   try {
