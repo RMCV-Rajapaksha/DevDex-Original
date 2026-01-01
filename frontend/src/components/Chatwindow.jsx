@@ -21,20 +21,21 @@ const ChatContainer = ({ isOpen, toggleChatbox }) => {
 
   const sendMessage = async () => {
     try {
-
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       const res = await axios.post(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ',
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
           contents: [{ parts: [{ text: userMessage + " check the given code is good code or bad code, is it good code output good and if it is bad output bad" }] }]
         }
       );
-     
+
       const responseText = res.data.candidates[0].content.parts[0].text;
       setMessages([...messages, { sender: 'user', text: userMessage }, { sender: 'bot1', text: responseText }]);
       const evaluation = evaluateCode(userMessage); // Evaluate the user input
       addBotMessage(evaluation); // Add evaluation message
     } catch (error) {
       console.error('Error sending message:', error);
+      setMessages(prev => [...prev, { sender: 'bot1', text: 'Sorry, I encountered an error. Please try again.' }]);
     }
     setUserMessage('');
   };

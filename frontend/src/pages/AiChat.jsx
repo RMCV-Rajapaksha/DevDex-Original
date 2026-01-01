@@ -10,30 +10,41 @@ const AiChat = () => {
   const [inputValue, setInputValue] = useState('');
 
   const sendMessage = async () => {
-    const res = await axios({
-      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDtlvF-m0virJ7qw1TwA0SJOmuQO5XxQwQ',
-      method: 'post',
-      data: {
-        contents: [{ parts: [{ text: inputValue+"give as a paragraph" }] }]
-      }
-    });
-    const responseText = res.data.candidates[0].content.parts[0].text;
-    setMessages([...messages, { sender: 'user', text: inputValue }, { sender: 'bot1', text: responseText }]);
+    if (!inputValue.trim()) return;
+
+    const userMessage = { sender: 'user', text: inputValue };
+    setMessages(prev => [...prev, userMessage]);
     setInputValue('');
+
+    try {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const res = await axios({
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        method: 'post',
+        data: {
+          contents: [{ parts: [{ text: inputValue + " give as a paragraph" }] }]
+        }
+      });
+      const responseText = res.data.candidates[0].content.parts[0].text;
+      setMessages(prev => [...prev, { sender: 'bot1', text: responseText }]);
+    } catch (error) {
+      console.error('AI Chat Error:', error);
+      setMessages(prev => [...prev, { sender: 'bot1', text: 'Sorry, I encountered an error. Please try again later.' }]);
+    }
   };
 
   useEffect(() => {
     setMessages([
       { sender: 'bot', text: "Hello there, adventurer! 🌟 Welcome to our digital realm!" },
       { sender: 'bot', text: "What quests shall we embark on today? Your journey awaits!" }
-  ]);
-  
+    ]);
+
   }, []);
 
   return (
     <>
       <Navbar />
-     
+
       <div className="flex items-center justify-center mt-20 mb-16 overflow-auto flex-grow-col">
         <div className="w-full max-w-4xl p-4">
           {messages.map((message, index) => (
@@ -44,16 +55,16 @@ const AiChat = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              {message.sender === 'bot' ||   message.sender === 'bot1' ? (
+              {message.sender === 'bot' || message.sender === 'bot1' ? (
                 <>
                   <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
                     <img src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato" alt="User Avatar" className="w-8 h-8 rounded-full" />
                   </div>
                   <div className="flex max-w-2xl gap-3 p-3 bg-white rounded-lg">
                     <p className="text-gray-700">{message.text}</p>
-                   
+
                   </div>
-                  {message.sender ==='bot1'? (<TextToSpeech text={message.text}/>):(<div></div>)}
+                  {message.sender === 'bot1' ? (<TextToSpeech text={message.text} />) : (<div></div>)}
                 </>
               ) : (
                 <>
@@ -83,7 +94,7 @@ const AiChat = () => {
             transition={{ duration: 0.5 }}
           />
           <motion.button
-          value={inputValue}
+            value={inputValue}
             className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out rounded-lg bg-gradient-to-r from-yellow-400 to-pink-600 hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
             onClick={sendMessage}
             whileHover={{ scale: 1.05, boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)' }}

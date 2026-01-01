@@ -13,6 +13,7 @@ import AnswerCard from "../components/AnswerCard";
 import TagBadge from "../components/TagBadge";
 import Comments from "../components/Comments";
 import TextToSpeech from "../components/TextToSpeech";
+import ConfirmModal from "../components/ConfirmModal";
 import { UserContext } from "../context/UserContext";
 import { URL, IF } from '../url';
 
@@ -30,6 +31,9 @@ const PostDetails = () => {
   const [comment, setComment] = useState("");
   const [answerBody, setAnswerBody] = useState("");
   const [submittingAnswer, setSubmittingAnswer] = useState(false);
+
+  // Delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const fetchPost = async () => {
     try {
@@ -71,7 +75,6 @@ const PostDetails = () => {
   }, [postId]);
 
   const handleDeletePost = async () => {
-    if (!window.confirm('Are you sure you want to delete this question?')) return;
     try {
       await axios.delete(`${URL}/api/posts/${postId}`, { withCredentials: true });
       navigate('/');
@@ -250,7 +253,7 @@ const PostDetails = () => {
                           <BiEdit /> Edit
                         </button>
                         <button
-                          onClick={handleDeletePost}
+                          onClick={() => setShowDeleteModal(true)}
                           className="flex items-center gap-1 hover:text-red-400 transition-colors"
                         >
                           <MdDelete /> Delete
@@ -390,6 +393,16 @@ const PostDetails = () => {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeletePost}
+        title="Delete Question"
+        message="Are you sure you want to delete this question? All answers and comments will also be deleted."
+        confirmText="Delete Question"
+        variant="danger"
+      />
 
       <Footer />
     </div>

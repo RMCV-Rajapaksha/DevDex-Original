@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import QuestionCard from "../components/QuestionCard";
 import Loader from "../components/Loader";
+import ConfirmModal from "../components/ConfirmModal";
 import { UserContext } from "../context/UserContext";
 import { URL } from "../url";
 
@@ -27,6 +28,9 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updated, setUpdated] = useState(false);
+
+  // Delete modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const isOwnProfile = user && user._id === profileId;
 
@@ -83,7 +87,6 @@ const Profile = () => {
   };
 
   const handleUserDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
       await axios.delete(`${URL}/api/users/${user._id}`, { withCredentials: true });
       setUser(null);
@@ -238,7 +241,7 @@ const Profile = () => {
                     <FaTimes /> Cancel
                   </button>
                   <button
-                    onClick={handleUserDelete}
+                    onClick={() => setShowDeleteModal(true)}
                     className="px-5 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 flex items-center gap-2 ml-auto"
                   >
                     <FaTrash /> Delete Account
@@ -289,6 +292,16 @@ const Profile = () => {
           </motion.div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleUserDelete}
+        title="Delete Account"
+        message="Are you sure you want to delete your account? This action cannot be undone. All your questions, answers, and comments will be permanently removed."
+        confirmText="Delete Account"
+        variant="danger"
+      />
 
       <Footer />
     </div>

@@ -6,6 +6,7 @@ import { BiEdit } from 'react-icons/bi';
 import { MdDelete } from 'react-icons/md';
 import { FaCheck, FaSave, FaTimes } from 'react-icons/fa';
 import VoteButtons from "./VoteButtons";
+import ConfirmModal from "./ConfirmModal";
 import { UserContext } from "../context/UserContext";
 import { URL } from "../url";
 
@@ -21,6 +22,7 @@ const AnswerCard = ({
     const [isEditing, setIsEditing] = useState(false);
     const [editBody, setEditBody] = useState(answer.body);
     const [loading, setLoading] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const isAnswerAuthor = user && user._id === answer.userId;
     const isQuestionAuthor = user && user._id === questionAuthorId;
@@ -67,7 +69,6 @@ const AnswerCard = ({
     };
 
     const handleDelete = async () => {
-        if (!window.confirm('Are you sure you want to delete this answer?')) return;
         try {
             await axios.delete(`${URL}/api/answers/${answer._id}`, { withCredentials: true });
             if (onAnswerDelete) {
@@ -159,11 +160,21 @@ const AnswerCard = ({
                                             <BiEdit /> Edit
                                         </button>
                                         <button
-                                            onClick={handleDelete}
+                                            onClick={() => setShowDeleteModal(true)}
                                             className="flex items-center gap-1 hover:text-red-400 transition-colors"
                                         >
                                             <MdDelete /> Delete
                                         </button>
+
+                                        <ConfirmModal
+                                            isOpen={showDeleteModal}
+                                            onClose={() => setShowDeleteModal(false)}
+                                            onConfirm={handleDelete}
+                                            title="Delete Answer"
+                                            message="Are you sure you want to delete this answer? This action cannot be undone."
+                                            confirmText="Delete Answer"
+                                            variant="danger"
+                                        />
                                     </>
                                 )}
                             </div>
