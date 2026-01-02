@@ -42,7 +42,8 @@ app.use("/images", express.static(path.join(__dirname, "/images")))
 app.use(cors({
   origin: [
     'http://localhost:5173', // Local development
-    'https://dev-dex-original-git-main-chamara-vishwajiths-projects-6861c39b.vercel.app' // Vercel deployment
+    'https://dev-dex-original-git-main-chamara-vishwajiths-projects-6861c39b.vercel.app', // Vercel deployment (old)
+    'https://dev-dex-original.vercel.app' // Vercel deployment (production)
   ],
   credentials: true,
 }));
