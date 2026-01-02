@@ -40,7 +40,10 @@ const app = express();
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")))
 app.use(cors({
-  origin: '*', // Allow all origins
+  origin: [
+    'http://localhost:5173', // Local development
+    'https://dev-dex-original-git-main-chamara-vishwajiths-projects-6861c39b.vercel.app' // Vercel deployment
+  ],
   credentials: true,
 }));
 app.use(cookieParser());
